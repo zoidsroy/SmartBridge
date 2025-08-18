@@ -61,8 +61,8 @@ SmartBridge는 기존 가전을 교체하지 않고도 스마트홈 환경에서
    ```bash
    ngrok http 5000
 
-5. **colab 실행**
-
+5. **.ipynb 파일을 다운로드 후 colab 환경에서 실행**
+  
 6. **.pkl, .pth 모델 파일을 test코드 레포지토링 위치**
 
 7. **테스트 실행**
