@@ -195,3 +195,29 @@ ngrok.yml
 *.swp
 .cursorignore
 .cursorindexingignore
+
+# ===================
+# Flask/Python
+# ===================
+# Python
+__pycache__/
+*.pyc
+
+# Virtualenv
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Firebase
+firebase_config.json
+
+# ngrok
+ngrok.exe
+ngrok.yml
+.ngrok2/
