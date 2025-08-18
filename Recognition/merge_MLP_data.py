@@ -1,10 +1,9 @@
-# merge_existing_data.py
+# merge_MLP_data.py
 """
 기존 수집된 데이터를 MLP 학습용으로 병합하는 스크립트
 ./gesture_data/main_data/large_data의 CSV 파일들을 통합
 
 Author: AIoT Project Team
-Date: 2024
 """
 
 import pandas as pd
@@ -364,4 +363,5 @@ def main():
         print(f"\n❌ 데이터 병합 실패!")
 
 if __name__ == "__main__":
+
     main()
