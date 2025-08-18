@@ -3,8 +3,9 @@
 
 <!-- 헤더: 움직이는 타이핑 배너 -->
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&center=true&vCenter=true&width=750&lines=Hi%20I'm%20SmartBridge!;AIoT%20기반%20만능%20리모컨%20시스템" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Noto+Sans+KR&size=28&pause=1000&center=true&vCenter=true&width=750&lines=Hi%20I'm%20SmartBridge!;AIoT%20기반%20만능%20리모컨%20시스템" alt="Typing SVG" />
 </p>
+
 
 
 <!-- 제목 -->
