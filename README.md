@@ -194,15 +194,9 @@ flutter run
 - **Backend**: Flask (Python)
 - **Database**: Firebase Realtime Database
 - **Authentication**: Firebase Auth
-- **Hardware**: Arduino UNO R4 WiFi
+- **Hardware**: Arduino UNO R4 WiFi (C/C++)
 - **Communication**: MQTT, HTTP API
 - **AI/ML**: Mediapipe, TensorFlow
-
----
-
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다.
 
 ---
 
