@@ -47,16 +47,16 @@ SmartBridge는 기존 가전을 교체하지 않고도 스마트홈 환경에서
    venv\Scripts\activate      # (Windows)
 
 2. **라이브러리 설치**
-   '''bash
+   ```bash
    pip install -r requurements.txt
 
 
 3. **Flask 서버 실행**
-   '''bash
+   ```bash
    python app.py
 
 4. **ngrok 실행**
-   '''bash
+   ```bash
    ngrok http 5000
 
 5. **colab 실행**
@@ -64,6 +64,6 @@ SmartBridge는 기존 가전을 교체하지 않고도 스마트홈 환경에서
 6. **.pkl, .pth 모델 파일을 test코드 레포지토링 위치**
 
 7. **테스트 실행**
-   '''bash
+   ```bash
    python test.py
 
