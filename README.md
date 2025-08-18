@@ -3,8 +3,9 @@
 
 <!-- 헤더: 움직이는 타이핑 배너 -->
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Noto+Sans+KR&size=28&pause=1000&center=true&vCenter=true&width=750&lines=Hi%20I'm%20SmartBridge!;AIoT%20기반%20만능%20리모컨%20시스템" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&center=true&vCenter=true&width=750&lines=Hi%20I%27m%20SmartBridge%21;AIoT-based%20universal%20remote%20control%20system" alt="Typing SVG" />
 </p>
+
 
 
 
@@ -104,12 +105,13 @@ SmartBridge는 기존 가전을 교체하지 않고도 스마트홈 환경에서
 -   고령자·장애인 접근성 향상
 
 
+
+
 ## 📡 MQTT 기반 펌웨어 소개
 
 본 프로젝트는 **Arduino UNO R4 WiFi 보드**를 기반으로,  
 MQTT를 통한 스마트홈 기기 제어 및 **IR 송신**, **커튼 제어(서보모터)**를 수행하는 펌웨어입니다.  
 
----
 
 ## 📌 요구사항 (Requirements)
 
