@@ -1,0 +1,82 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{uid} {
+  		allow read: if true; // 임시로 전체 읽기 허용
+  		allow write: if request.auth.uid == uid;
+		}	
+
+    // 이하 기존 규칙 유지
+    match /users/{uid}/my_devices/{docId} {
+      allow read, write: if request.auth.uid == uid;
+    }
+    match /users/{uid}/mode_gesture/{docId} {
+      allow read, write: if request.auth.uid == uid;
+    }
+    match /users/{uid}/control_gesture/{docId} {
+      allow read, write: if request.auth.uid == uid; // 쓰기 권한 추가
+    }
+    match /users/{uid}/logs/{logId} {
+      allow read: if request.auth.uid == uid;
+      allow write: if false;
+    }
+    match /device_list/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /gesture_list/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /ir_codes/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
+
+// Firebase Realtime Database 규칙 (백엔드 구조에 맞춤)
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        "mode_gesture": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid"
+        },
+        "control_gesture": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid"
+        }
+      }
+    },
+    "control_gesture": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        "$mode": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid",
+          "$gesture": {
+            ".read": "$uid === auth.uid",
+            ".write": "$uid === auth.uid"
+          }
+        }
+      }
+    },
+    "mode_gesture": {
+      "$uid": {
+        ".read": "$uid === auth.uid",
+        ".write": "$uid === auth.uid",
+        "$mode": {
+          ".read": "$uid === auth.uid",
+          ".write": "$uid === auth.uid"
+        }
+      }
+    }
+  }
+}
