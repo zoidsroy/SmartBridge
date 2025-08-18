@@ -67,7 +67,6 @@ SmartBridge는 기존 가전을 교체하지 않고도 스마트홈 환경에서
    ```bash
    python test.py
 
-
 ## 🔑 주요 기능
 
 ### 🖐 손 제스처 인식
@@ -101,3 +100,60 @@ SmartBridge는 기존 가전을 교체하지 않고도 스마트홈 환경에서
 -   구형 가전도 교체 없이 스마트홈에 연결 가능\
 -   제스처/음성 제어로 누구나 직관적 사용 가능\
 -   고령자·장애인 접근성 향상
+
+
+## 📡 MQTT 기반 펌웨어 소개
+
+본 프로젝트는 **Arduino UNO R4 WiFi 보드**를 기반으로,  
+MQTT를 통한 스마트홈 기기 제어 및 **IR 송신**, **커튼 제어(서보모터)**를 수행하는 펌웨어입니다.  
+
+---
+
+## 📌 요구사항 (Requirements)
+
+### 🛠️ 하드웨어
+- Arduino UNO R4 WiFi 보드  
+- IR LED 송신기 (**핀: D3**)  
+- 360° 서보모터 (**핀: D9**)  
+- MQTT Broker (예: Mosquitto, 라즈베리파이 또는 PC에서 실행)  
+- Wi-Fi AP (SSID, Password 필요)  
+
+### 📚 라이브러리  
+*(Arduino IDE → 라이브러리 매니저에서 설치 가능)*  
+- **WiFiS3**  
+- **PubSubClient**  
+- **ArduinoJson** (버전 6.x 이상 권장)  
+- **IRremote** (버전 4.x 이상)  
+- **Servo** (Arduino 내장)  
+
+---
+
+## ⚙️ 환경 설정 (Environment Setup)
+
+### 1️⃣ Arduino IDE 설치
+- Arduino IDE (**v2.x 권장**) 설치 후,  
+  Arduino UNO R4 WiFi 보드 매니저 추가  
+
+### 2️⃣ 라이브러리 설치
+Arduino IDE → 상단 메뉴 → **스케치 → 라이브러리 포함하기 → 라이브러리 관리** → 아래 항목 설치
+- WiFiS3  
+- PubSubClient  
+- ArduinoJson  
+- IRremote  
+- Servo (기본 제공)  
+
+### 3️⃣ MQTT 브로커 설정
+- 로컬 또는 원격 서버에 **MQTT 브로커 실행** (예: Mosquitto)  
+- 코드 내 변수 수정  
+
+### 4️⃣ Wi-Fi 접속 정보 수정
+- 코드 내 **SSID, Password**를 실제 환경에 맞게 변경  
+
+---
+
+💡 위 설정이 완료되면, Arduino UNO R4 WiFi 보드는 MQTT 메시지를 수신하여  
+- **IR LED 제어 (가전 제어)**  
+- **서보모터 제어 (커튼 열기/닫기)**  
+
+등의 기능을 수행할 수 있습니다.  
+
