@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -205,3 +206,72 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+=======
+# Upload only gesture folder
+*
+!gesture/
+!.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtualenv
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / Env
+.env
+.env.*
+*.env
+
+# Keys & Certs
+*.pem
+*.key
+*.crt
+*.der
+*.p12
+*.keystore
+
+# Ngrok
+ngrok.yml
+.ngrok2/
+
+# Firebase (Admin credential)
+firebase_config.json
+
+# Flask
+instance/
+
+# Tests / Tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+
+# Packaging / Build
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Logs
+*.log
+>>>>>>> 38512a7 (대시보드 연동을 위한 Flask 서버 & MQTT 백엔드)
