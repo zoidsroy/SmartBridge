@@ -128,6 +128,11 @@ flutter run
 
 ---
 
+### 4️⃣ 손동작 인식 데이터
+
+- MLP 데이터 : https://drive.google.com/file/d/1OTsTO228GnLIHdCKpG7RDiGOyXTuZfia/view?usp=drive_link
+- TCN 데이터 : https://drive.google.com/file/d/1QAH3B2xb9BZhQWyzNqW1F38bo8Lg0WTk/view?usp=drive_link
+
 ## 📱 Flutter 앱 주요 화면
 
 ### 🏠 홈 화면
