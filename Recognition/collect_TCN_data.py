@@ -1,10 +1,9 @@
-# collect_sequence_data.py
+# collect_TCN_data.py
 """
 시퀀스 제스처 데이터 수집 (TCN용)
 시계방향, 반시계방향, 별 모양 등 동적 제스처 수집
 
 Author: AIoT Project Team
-Date: 2024
 """
 
 import cv2
@@ -657,4 +656,5 @@ def main():
         print("\n🎉 데이터 수집 완료!")
 
 if __name__ == "__main__":
+
     main()
