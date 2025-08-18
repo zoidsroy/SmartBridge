@@ -1,27 +1,8 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
-migrate_working_dir/
+# SmartBridge Project - Combined .gitignore
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
+# ===================
+# Flutter/Dart
+# ===================
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
@@ -76,45 +57,141 @@ app.*.map.json
 # Web related
 lib/generated_plugin_registrant.dart
 
-# Exceptions to above rules
-!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+# ===================
+# Python
+# ===================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 
-# Firebase
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py.cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Django stuff:
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Virtualenv
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ===================
+# Firebase & Authentication
+# ===================
 /android/app/google-services.json
 /ios/Runner/GoogleService-Info.plist
 /ios/firebase_app_id_file.json
+assets/data/auth.json
+*.serviceAccountKey.json
+firebase_config.json
 
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# Log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Local configuration files
-android/local.properties
-ios/Runner/GoogleService-Info.plist
-android/app/google-services.json
-
-# Flutter/Dart build outputs
-build/
-.dart_tool/
-.pub/
-ephemeral/
-
-# IDE files
+# ===================
+# IDE & OS
+# ===================
 .vscode/
 .idea/
 *.iml
+*.ipr
 *.iws
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+Thumbs.db
 
+# ===================
+# Environment & Secrets
+# ===================
+.env
+.env.*
+.env.local
+.env.*.local
+*.env
+
+# Keys & Certificates
+*.pem
+*.key
+*.crt
+*.der
+*.p12
+*.keystore
+
+# ===================
+# Logs
+# ===================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+flutter_*.log
+
+# ===================
 # Generated files
+# ===================
 *.g.dart
 *.mocks.dart
 *.config.dart
 
-# Flutter logs
-flutter_*.log
+# ===================
+# Arduino & Hardware
+# ===================
+# (Add specific patterns if needed)
+
+# ===================
+# Network Tools
+# ===================
+ngrok.yml
+.ngrok2/
+
+# ===================
+# Miscellaneous
+# ===================
+*.class
+*.pyc
+*.swp
+.cursorignore
+.cursorindexingignore
