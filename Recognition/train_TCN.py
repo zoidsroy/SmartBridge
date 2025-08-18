@@ -1,7 +1,7 @@
 # train_TCN.py
 """
 TCN을 사용한 시퀀스 제스처 인식 모델 학습
-collect_sequence_data.py로 수집된 데이터 사용
+collect_TCN_data.py로 수집된 데이터 사용
 
 Author: AIoT Project Team
 """
@@ -787,3 +787,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
