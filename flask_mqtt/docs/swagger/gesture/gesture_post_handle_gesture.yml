@@ -1,0 +1,65 @@
+post:
+  summary: 제스처 실행
+  consumes:
+    - application/json
+  parameters:
+    - in: body
+      name: body
+      required: true
+      schema:
+        type: object
+        properties:
+          gesture:
+            type: string
+          uid:
+            type: string
+        example:
+          gesture: small_heart
+          uid: user123
+  responses:
+    200:
+      description: 성공적으로 처리됨(모드 설정 / IR 명령 MQTT 전송)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              metadata:
+                type: object
+                properties:
+                  mode:
+                    type: string
+                  control:
+                    type: string
+            example:
+              message: "전송 성공"
+              metadata:
+                mode: light
+                control: power
+    400:
+      content:
+        application/json:
+          examples:
+            missing_parameters:
+              summary: 필수 파라미터 누락
+              value:
+                error: "uid와 제스처가 없습니다"
+            mode_not_selected:
+              summary: 모드가 설정되지 않은 상태에서 제스처 입력
+              value:
+                error: "현재 모드가 설정되어 있지 않습니다."
+    404:
+      description: 제스처가 해당 모드에 존재하지 않음
+      content:
+        application/json:
+          example:
+            error: "모드 'light'에 제스처 'small_heart'가 없습니다."
+    500:
+      description: MQTT 전송 실패
+      content:
+        application/json:
+          example:
+            error: "MQTT 전송 실패 (metadata: 1)"
+  

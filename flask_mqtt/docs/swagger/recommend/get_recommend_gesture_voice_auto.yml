@@ -1,0 +1,58 @@
+get:
+  summary: 추천시스템
+  parameters:
+    - name: uid
+      in: query
+      required: true
+      schema:
+        type: string
+      description: 사용자 uid
+      example: user123
+  responses:
+    200:
+      description: 추천 제스처 반환 (최대 6개 추천)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              timestamp:
+                type: string
+              recommendations:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    device:
+                      type: string
+                    recommended_gesture:
+                      type: string
+                    recommended_voice:
+                      type: string
+                    reason:
+                      type: string
+          example:
+            timestamp: "2025-07-22T22:15:00+09:00"
+            recommendations:
+              - device: fan
+                recommended_gesture: small_heart
+                reason: "현재 온도가 높음 (>27°C) 및 전원이 꺼짐"
+    400:
+      description: 요청 오류 (uid 누락 또는 device 정보 없음)
+      content:
+        application/json:
+          examples:
+            missing_uid:
+              summary: uid 누락
+              value:
+                error: "uid가 필요합니다."
+            no_current_device:
+              summary: 현재 device 정보 없음
+              value:
+                error: "현재 device 정보를 찾을 수 없습니다."
+    500:
+      description: 서버 내부 오류
+      content:
+        application/json:
+          example:
+            error: "예상치 못한 오류가 발생했습니다."

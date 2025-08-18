@@ -1,0 +1,52 @@
+post:
+  summary: 손동작, 컨트롤 매핑 정보 등록
+  consumes:
+    - application/json
+  parameters:
+    - in: body
+      name: body
+      required: true
+      schema:
+        type: object
+        properties:
+          mode:
+            type: string
+          gesture:
+            type: string
+          control:
+            type: string
+          uid:
+            type: string
+        example:
+          mode: light
+          gesture: small_heart
+          control: power
+          uid: user123
+  responses:
+    200:
+      description: 매핑 정보 등록 성공
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: "제스처 'small_heart'가 모드 'light'의 control 'power'로 등록되었습니다."
+    400:
+      content:
+        application/json:
+          examples:
+            missing_parameters:
+              summary: 필수 파라미터 누락
+              value:
+                error: "uid, mode, gesture, control은 모두 필요합니다."
+            invalid_gesture:
+              summary: 유효하지 않은 제스처
+              value:
+                error: "gesture가 유효하지 않습니다."
+            invalid_control:
+              summary: 유효하지 않은 컨트롤
+              value:
+                error: "control이 유효하지 않습니다."
