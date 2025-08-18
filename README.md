@@ -3,8 +3,9 @@
 
 <!-- 헤더: 움직이는 타이핑 배너 -->
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&center=true&vCenter=true&width=750&lines=Hi%2C+I'm+SmartBridge!;AIoT+Universal+Remote+Control;Gesture+%26+Voice+Controlled;Always+learning+new+things" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&center=true&vCenter=true&width=750&lines=Hi+I'm+SmartBridge!;AIoT+기반+만능+리모컨+시스템" alt="Typing SVG" />
 </p>
+
 
 <!-- 제목 -->
 <h1 align="center">✨ SmartBridge — AIoT 만능 리모컨 ✨</h1>
