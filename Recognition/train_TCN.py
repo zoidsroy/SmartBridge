@@ -27,7 +27,7 @@ import glob
 # 설정 및 상수
 # =============================================================================
 
-# 제스처 라벨 매핑 (수집 코드와 동일)
+# 제스처 라벨 매핑 (수집 코드와 동일)(학습 코드에서 알아서 제스쳐 라벨 추적 후 설정)
 SEQUENCE_GESTURES = {
     'clockwise': 0,          # 시계방향 원형
     'counter_clockwise': 1,  # 반시계방향 원형
@@ -46,7 +46,7 @@ LABEL_TO_NAME = {v: k for k, v in SEQUENCE_GESTURES.items()}
 
 # 학습 설정
 TRAINING_CONFIG = {
-    'data_dir': './gesture_data/new_sequence_data',
+    'data_dir': './TCN_data',
     'sequence_length': 60,          # 시퀀스 길이
     'input_features': 99,           # 입력 특징 차원
     'num_classes': 10,  # 기본값, 데이터 로딩 후 업데이트됨
@@ -787,4 +787,5 @@ def main():
 if __name__ == "__main__":
 
     main()
+
 
