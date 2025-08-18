@@ -39,8 +39,8 @@ LABEL_TO_NAME = {v: k for k, v in GESTURE_LABELS.items()}
 
 # 학습 설정 (기존 데이터에 최적화)
 TRAINING_CONFIG = {
-    'data_file': './gesture_data/merged_existing_data_16.npy',
-    'metadata_file': './gesture_data/merged_data_metadata_16.json',
+    'data_file': './merged_MLP_data.npy',
+    'metadata_file': './merged_MLP_data_metadata.json',
     'input_dim': 99,           # 특징 차원 (84 + 15)
     'num_classes': 16,         # 제스처 클래스 수
     'hidden_sizes': [512, 256, 128, 64],  # 대량 데이터에 적합한 구조
@@ -655,3 +655,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
