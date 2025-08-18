@@ -3,5 +3,5 @@
 
 <!-- 헤더: 움직이는 타이핑 배너 (선택) -->
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&center=true&vCenter=true&width=750&lines=Hi%2C+I'm+Smart+ Bridge!;%26+AIoT+Enthusiast;Always+learning+new+things" alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=28&pause=1000&center=true&vCenter=true&width=750&lines=Hi%2C+I'm+Smart+ Bridge!;AIoT+Enthusiast;Always+learning+new+things" alt="Typing SVG" />
 </p>
