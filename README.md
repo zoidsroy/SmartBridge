@@ -67,3 +67,37 @@ SmartBridge는 기존 가전을 교체하지 않고도 스마트홈 환경에서
    ```bash
    python test.py
 
+
+## 🔑 주요 기능
+
+### 🖐 손 제스처 인식
+- Mediapipe 기반 손 관절 추출  
+- MLP+TCN 기반 제스처 분류  
+
+### 🎤 음성 명령 인식
+- Google STT 기반 STT (음성 → 텍스트)  
+- Google TTS (텍스트 → 음성 응답)  
+
+### 📡 가전 제어
+- Arduino UNO R4 WiFi + IR LED  
+- 360° 서보모터로 특정 가전 방향 송신  
+- Firebase RTDB로 IR 코드 관리  
+
+### 🌐 시스템 연동
+- Flask 서버: 제스처/음성 처리  
+- MQTT 통신: 서버 ↔ 아두이노  
+- Flutter 앱: 대시보드 UI 제공  
+
+## 🏗️ 시스템 아키텍처
+
+    [사용자] → (제스처 / 음성 입력)
+          ↓
+    [Flask 서버] → MQTT → [Arduino UNO R4 WiFi] → IR LED → [가전제품]
+          ↓
+    [Firebase RTDB] ↔ [Flutter 앱]
+
+## ✅ 기대 효과
+
+-   구형 가전도 교체 없이 스마트홈에 연결 가능\
+-   제스처/음성 제어로 누구나 직관적 사용 가능\
+-   고령자·장애인 접근성 향상
