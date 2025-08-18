@@ -1,4 +1,4 @@
-# unified_gesture_voice_system.py
+# test.py
 """
 통합 제스처 + 음성 인식 시스템
 - test_integrated_gesture_live.py: 100% 그대로 유지 (메인 스레드)
