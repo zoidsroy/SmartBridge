@@ -5,10 +5,10 @@
 #include <Servo.h>
 #include "ir_codes.h"  // ✅ 로컬 IR 코드 헤더 포함
 
-const char* ssid = "_Galaxy A34";
-const char* password = "paix0220!@";
+const char* ssid = "_";
+const char* password = "_";
 
-const char* mqtt_server = "10.116.191.204";
+const char* mqtt_server = "000.000.000.000";
 const int mqtt_port = 1883;
 const char* mqtt_topic = "smartHome/metadata";
 
