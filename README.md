@@ -53,7 +53,6 @@ SmartBridge는 기존 가전을 교체하지 않고도 스마트홈 환경에서
    ```bash
    pip install -r requurements.txt
 
-
 3. **Flask 서버 실행**
    ```bash
    python app.py
