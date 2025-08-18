@@ -1,10 +1,9 @@
-# train_existing_mlp.py
+# train_MLP.py
 """
 기존 수집된 데이터로 MLP 모델 학습
 merge_existing_data.py로 병합된 데이터 사용
 
 Author: AIoT Project Team
-Date: 2024
 """
 
 import numpy as np
@@ -654,4 +653,5 @@ def main():
     print(f"   - 다음 단계: 실시간 테스트용 코드 작성")
 
 if __name__ == "__main__":
+
     main()
