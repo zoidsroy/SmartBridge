@@ -495,10 +495,10 @@ def wait_for_wake_word(recognizer, mic):
 # 통합 인식 설정
 INTEGRATED_CONFIG = {
     # 모델 파일
-    'mlp_model_pattern': 'existing_mlp_model_100.0pct_0815.pth',
-    'tcn_model_pattern': 'sequence_tcn_model_100.0pct_0814.pth',
-    'mlp_scaler_file': 'existing_mlp_scaler_0815.pkl',
-    'tcn_scaler_file': 'sequence_tcn_scaler_0814.pkl',
+    'mlp_model_pattern': 'MLP_model.pth',
+    'tcn_model_pattern': 'TCN_model.pth',
+    'mlp_scaler_file': 'MLP_scaler.pkl',
+    'tcn_scaler_file': 'TCN_scaler.pkl',
     
     # 인식 설정 (더 유연하게 조정)
     'static_confidence_threshold': 0.7,        # 정적 제스처 신뢰도 임계값
