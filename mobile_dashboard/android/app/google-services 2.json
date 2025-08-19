@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "721209451577",
+    "firebase_url": "https://project1-96997-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "project1-96997",
+    "storage_bucket": "project1-96997.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:721209451577:android:3a16d7c7825cc555b299e8",
+        "android_client_info": {
+          "package_name": "com.devvirtuoso.iot_smarthome"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSBMa7K2H2vAXqyRva1i3lilKguRPxnAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
