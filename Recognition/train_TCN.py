@@ -1,9 +1,6 @@
-# train_TCN.py
 """
 TCN을 사용한 시퀀스 제스처 인식 모델 학습
-collect_TCN_data.py로 수집된 데이터 사용
 
-Author: AIoT Project Team
 """
 
 import numpy as np
@@ -23,11 +20,8 @@ from datetime import datetime
 from collections import Counter
 import glob
 
-# =============================================================================
-# 설정 및 상수
-# =============================================================================
 
-# 제스처 라벨 매핑 (수집 코드와 동일)(학습 코드에서 알아서 제스쳐 라벨 추적 후 설정)
+# 제스처 라벨 매핑 
 SEQUENCE_GESTURES = {
     'clockwise': 0,          # 시계방향 원형
     'counter_clockwise': 1,  # 반시계방향 원형
@@ -75,12 +69,8 @@ TRAINING_CONFIG = {
     'class_balancing': True,         # 클래스 균형 맞추기
 }
 
-# =============================================================================
-# TCN 모델 구현
-# =============================================================================
 
 class Chomp1d(nn.Module):
-    """TCN을 위한 Chomp 레이어 (인과관계 유지)"""
     def __init__(self, chomp_size):
         super(Chomp1d, self).__init__()
         self.chomp_size = chomp_size
@@ -227,9 +217,6 @@ class SequenceTCN(nn.Module):
         
         return output
 
-# =============================================================================
-# 데이터셋 클래스
-# =============================================================================
 
 class SequenceGestureDataset(Dataset):
     """시퀀스 제스처 데이터셋"""
@@ -244,13 +231,10 @@ class SequenceGestureDataset(Dataset):
     def __getitem__(self, idx):
         return self.sequences[idx], self.labels[idx]
 
-# =============================================================================
-# 데이터 로딩 및 전처리
-# =============================================================================
 
 def load_sequence_data(config):
     """시퀀스 데이터 로딩"""
-    print("📁 시퀀스 데이터 로딩 중...")
+    print("  시퀀스 데이터 로딩 중...")
     
     data_dir = config['data_dir']
     
@@ -258,13 +242,12 @@ def load_sequence_data(config):
     npz_files = glob.glob(os.path.join(data_dir, "sequence_gestures_*.npz"))
     
     if not npz_files:
-        print(f"❌ 데이터 파일을 찾을 수 없습니다: {data_dir}")
-        print("먼저 collect_sequence_data.py를 실행해서 데이터를 수집해주세요.")
+        print(f"  데이터 파일을 찾을 수 없습니다: {data_dir}")
         return None, None, None, None
     
     # 가장 최신 파일 사용
     latest_file = max(npz_files, key=os.path.getctime)
-    print(f"   📁 데이터 파일: {os.path.basename(latest_file)}")
+    print(f"     데이터 파일: {os.path.basename(latest_file)}")
     
     try:
         # 데이터 로딩
@@ -282,7 +265,7 @@ def load_sequence_data(config):
         SEQUENCE_GESTURES = gesture_to_label
         LABEL_TO_NAME = {v: k for k, v in gesture_to_label.items()}
         
-        print(f"✅ 데이터 로딩 완료")
+        print(f"  데이터 로딩 완료")
         print(f"   - 총 샘플: {len(sequences):,}")
         print(f"   - 시퀀스 길이: {sequences.shape[1]}")
         print(f"   - 특징 차원: {sequences.shape[2]}")
@@ -301,12 +284,12 @@ def load_sequence_data(config):
         return sequences, labels, unique_gestures, gesture_to_label
         
     except Exception as e:
-        print(f"❌ 데이터 로딩 실패: {e}")
+        print(f"  데이터 로딩 실패: {e}")
         return None, None, None, None
 
 def preprocess_sequences(sequences, labels, config):
     """시퀀스 데이터 전처리"""
-    print("\n🔄 시퀀스 데이터 전처리 중...")
+    print("\n  시퀀스 데이터 전처리 중...")
     
     # 데이터 유효성 검사
     valid_mask = []
@@ -332,9 +315,7 @@ def preprocess_sequences(sequences, labels, config):
     
     print(f"   - 유효한 샘플: {len(valid_sequences):,}")
     
-    # 특징 정규화 (각 샘플의 각 시점별로 정규화)
-    print("   - 특징 정규화 중...")
-    
+
     # 모든 시퀀스를 하나로 합쳐서 통계 계산
     all_features = valid_sequences.reshape(-1, valid_sequences.shape[-1])
     scaler = StandardScaler()
@@ -368,7 +349,7 @@ def preprocess_sequences(sequences, labels, config):
 
 def create_data_loaders(sequences, labels, config):
     """데이터로더 생성"""
-    print("\n📦 데이터로더 생성 중...")
+    print("\n  데이터로더 생성 중...")
     
     # 데이터셋 생성
     dataset = SequenceGestureDataset(sequences, labels)
@@ -413,9 +394,6 @@ def create_data_loaders(sequences, labels, config):
     
     return train_loader, val_loader, test_loader
 
-# =============================================================================
-# 학습 함수들
-# =============================================================================
 
 def train_epoch(model, train_loader, criterion, optimizer, device, config):
     """한 에포크 학습"""
@@ -478,13 +456,13 @@ def validate_epoch(model, val_loader, criterion, device):
 
 def train_model(model, train_loader, val_loader, config, device, class_weights=None):
     """모델 학습 메인 함수"""
-    print("\n🚀 TCN 시퀀스 제스처 모델 학습 시작!")
+    print("\n  TCN 시퀀스 제스처 모델 학습 시작!")
     print("=" * 60)
     
     # 손실 함수와 옵티마이저
     if class_weights is not None:
         criterion = nn.CrossEntropyLoss(weight=class_weights.to(device))
-        print("⚖️ 클래스 가중치 적용됨")
+        print("  클래스 가중치 적용됨")
     else:
         criterion = nn.CrossEntropyLoss()
     
@@ -512,7 +490,7 @@ def train_model(model, train_loader, val_loader, config, device, class_weights=N
     best_model_state = None
     patience_counter = 0
     
-    print(f"🔧 모델 정보:")
+    print(f"  모델 정보:")
     print(f"   - 파라미터 수: {sum(p.numel() for p in model.parameters()):,}")
     print(f"   - 학습 샘플: {len(train_loader.dataset):,}")
     print(f"   - 검증 샘플: {len(val_loader.dataset):,}")
@@ -550,7 +528,7 @@ def train_model(model, train_loader, val_loader, config, device, class_weights=N
             best_val_acc = val_acc
             best_model_state = model.state_dict().copy()
             patience_counter = 0
-            status = "🎯 NEW BEST!"
+            status = "  NEW BEST!"
         else:
             patience_counter += 1
             status = f"({patience_counter}/{config['early_stopping_patience']})"
@@ -566,7 +544,7 @@ def train_model(model, train_loader, val_loader, config, device, class_weights=N
         
         # 조기 종료
         if patience_counter >= config['early_stopping_patience']:
-            print(f"⏹️ 조기 종료 (patience={config['early_stopping_patience']})")
+            print(f"  조기 종료 (patience={config['early_stopping_patience']})")
             break
     
     # 최고 성능 모델 로드
@@ -574,7 +552,7 @@ def train_model(model, train_loader, val_loader, config, device, class_weights=N
     
     total_training_time = time.time() - training_start_time
     
-    print(f"\n✅ 학습 완료!")
+    print(f"\n  학습 완료!")
     print(f"   - 최고 검증 정확도: {best_val_acc:.2f}%")
     print(f"   - 총 학습 시간: {total_training_time/60:.1f}분")
     print(f"   - 에포크당 평균: {total_training_time/(epoch+1):.1f}초")
@@ -583,20 +561,20 @@ def train_model(model, train_loader, val_loader, config, device, class_weights=N
 
 def evaluate_model(model, test_loader, device):
     """모델 평가"""
-    print("\n📊 모델 평가 중...")
+    print("\n  모델 평가 중...")
     
     criterion = nn.CrossEntropyLoss()
     test_loss, test_acc, predictions, targets = validate_epoch(
         model, test_loader, criterion, device
     )
     
-    print(f"🎯 테스트 결과:")
+    print(f"  테스트 결과:")
     print(f"   - 손실: {test_loss:.4f}")
     print(f"   - 정확도: {test_acc:.2f}%")
     
     # 상세 분류 보고서
     target_names = [LABEL_TO_NAME.get(i, f'class_{i}') for i in range(TRAINING_CONFIG['num_classes'])]
-    print(f"\n📋 상세 분류 보고서:")
+    print(f"\n  상세 분류 보고서:")
     print(classification_report(
         targets, predictions, 
         target_names=target_names,
@@ -676,7 +654,7 @@ def plot_results(history, predictions, targets, save_path='tcn_sequence_results.
     plt.tight_layout()
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.show()
-    print(f"📊 결과 그래프가 '{save_path}'에 저장되었습니다.")
+    print(f"  결과 그래프가 '{save_path}'에 저장되었습니다.")
 
 def save_model(model, scaler, config, test_accuracy, gesture_info):
     """모델과 전처리기 저장"""
@@ -702,25 +680,21 @@ def save_model(model, scaler, config, test_accuracy, gesture_info):
     with open(scaler_path, 'wb') as f:
         pickle.dump(scaler, f)
     
-    print(f"💾 모델 저장 완료:")
+    print(f"  모델 저장 완료:")
     print(f"   - 모델: {model_path}")
     print(f"   - 스케일러: {scaler_path}")
     print(f"   - 테스트 정확도: {test_accuracy:.2f}%")
     print(f"   - 학습된 제스처: {gesture_info['unique_gestures']}")
 
-# =============================================================================
-# 메인 실행 함수
-# =============================================================================
 
 def main():
     """메인 실행 함수"""
-    print("🤖 TCN 시퀀스 제스처 인식 모델 학습")
-    print("collect_sequence_data.py로 수집된 데이터 활용")
+    print("  TCN 시퀀스 제스처 인식 모델 학습")
     print("=" * 60)
     
     # 디바이스 설정
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"🔧 사용 디바이스: {device}")
+    print(f"  사용 디바이스: {device}")
     
     # 데이터 로딩
     sequences, labels, unique_gestures, gesture_to_label = load_sequence_data(TRAINING_CONFIG)
@@ -729,7 +703,7 @@ def main():
     
     # 클래스 수 업데이트
     TRAINING_CONFIG['num_classes'] = len(unique_gestures)
-    print(f"🔢 클래스 수 업데이트: {TRAINING_CONFIG['num_classes']}")
+    print(f"  클래스 수 업데이트: {TRAINING_CONFIG['num_classes']}")
     
     # 데이터 전처리
     sequences_scaled, labels, scaler, class_weights = preprocess_sequences(
@@ -742,7 +716,7 @@ def main():
     )
     
     # 모델 생성
-    print(f"\n🧠 TCN 모델 생성...")
+    print(f"\n  TCN 모델 생성...")
     model = SequenceTCN(
         input_features=TRAINING_CONFIG['input_features'],
         num_classes=TRAINING_CONFIG['num_classes'],
@@ -779,7 +753,7 @@ def main():
     }
     save_model(trained_model, scaler, TRAINING_CONFIG, test_accuracy, gesture_info)
     
-    print(f"\n🎉 학습 완료!")
+    print(f"\n 학습 완료!")
     print(f"   - 최종 테스트 정확도: {test_accuracy:.2f}%")
     print(f"   - 모델 파일: sequence_tcn_model_{test_accuracy:.1f}pct.pth")
     print(f"   - 다음 단계: 실시간 테스트용 코드 작성")
