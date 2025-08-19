@@ -1,15 +1,7 @@
-# test.py
 """
 통합 제스처 + 음성 인식 시스템
-- test_integrated_gesture_live.py: 100% 그대로 유지 (메인 스레드)
-- voice_recognition.py: 100% 그대로 유지 (별도 스레드)
 
-Author: AIoT Project Team
 """
-
-# =============================================================================
-# 경고 무시 설정 (Google Protobuf deprecated 경고)
-# =============================================================================
 import warnings
 
 # Google Protobuf 관련 deprecated 경고 무시
@@ -17,9 +9,6 @@ warnings.filterwarnings("ignore", message="SymbolDatabase.GetPrototype() is depr
 warnings.filterwarnings("ignore", message=".*GetPrototype.*is deprecated.*")
 warnings.filterwarnings("ignore", category=UserWarning, module="google.protobuf")
 
-# =============================================================================
-# 공통 Import (test_integrated_gesture_live.py에서)
-# =============================================================================
 import cv2
 import mediapipe as mp
 import numpy as np
@@ -31,9 +20,6 @@ import glob
 from collections import deque, Counter
 import os
 
-# =============================================================================
-# 음성 인식 Import (voice_recognition.py에서)
-# =============================================================================
 import speech_recognition as sr
 import requests
 import io
@@ -41,9 +27,6 @@ import wave
 import Levenshtein
 import threading
 
-# =============================================================================
-# 음성 인식 설정 및 함수들 (voice_recognition.py에서 완전 복사)
-# =============================================================================
 
 # ================== 서버 설정 ==================
 VOICE_SERVER_URL = 'http://192.168.219.108:5000/voice'  # 음성 서버 URL
@@ -80,15 +63,15 @@ def send_to_server(url, key, value, command_type=None):
         data["type"] = command_type
 
     try:
-        print(f"\n📡 [서버 전송] {key}: {value} (타입: {command_type})")
-        print(f"👤 사용자 UID: {USER_UID}")
-        print(f"🌐 전송 URL: {url}")
-        print(f"📤 전송 데이터: {data}")
+        print(f"\n [서버 전송] {key}: {value} (타입: {command_type})")
+        print(f" 사용자 UID: {USER_UID}")
+        print(f" 전송 URL: {url}")
+        print(f" 전송 데이터: {data}")
         
         response = requests.post(url, json=data, timeout=10)
         
         # 응답 상세 정보 출력
-        print(f"\n📥 [서버 응답]")
+        print(f"\n  [서버 응답]")
         print(f"   상태 코드: {response.status_code}")
         print(f"   응답 시간: {response.elapsed.total_seconds():.3f}초")
         print(f"   응답 헤더: {dict(response.headers)}")
@@ -96,28 +79,28 @@ def send_to_server(url, key, value, command_type=None):
         print(f"   응답 길이: {len(response.text)} 문자")
         
         if response.status_code == 200:
-            print(f"✅ 전송 성공! 서버가 정상적으로 응답했습니다.")
+            print(f"  전송 성공! 서버가 정상적으로 응답했습니다.")
             if response.text:
-                print(f"💬 서버 메시지: {response.text}")
+                print(f"  서버 메시지: {response.text}")
             else:
-                print(f"📭 서버에서 빈 응답을 받았습니다.")
+                print(f"  서버에서 빈 응답을 받았습니다.")
         elif response.status_code == 404:
-            print(f"❌ 404 오류: URL이 잘못되었거나 서버에 해당 엔드포인트가 없습니다.")
-            print(f"💡 확인사항: {url} 경로가 올바른지 확인하세요.")
+            print(f"  404 오류: URL이 잘못되었거나 서버에 해당 엔드포인트가 없습니다.")
+            print(f"  확인사항: {url} 경로가 올바른지 확인하세요.")
         elif response.status_code == 500:
-            print(f"❌ 500 오류: 서버 내부 오류가 발생했습니다.")
-            print(f"💡 서버 로그를 확인해보세요.")
+            print(f"  500 오류: 서버 내부 오류가 발생했습니다.")
+            print(f"  서버 로그를 확인해보세요.")
         else:
-            print(f"⚠️ 예상치 못한 응답 코드: {response.status_code}")
+            print(f"  예상치 못한 응답 코드: {response.status_code}")
             
     except requests.exceptions.ConnectionError as e:
-        print(f"❌ [연결 오류] 서버에 연결할 수 없습니다.")
+        print(f"  [연결 오류] 서버에 연결할 수 없습니다.")
         print(f"   오류 내용: {e}")
     except requests.exceptions.Timeout as e:
-        print(f"⏰ [타임아웃] 서버 응답이 10초를 초과했습니다.")
+        print(f"  [타임아웃] 서버 응답이 10초를 초과했습니다.")
         print(f"   오류 내용: {e}")
     except Exception as e:
-        print(f"❌ [예상치 못한 오류] {type(e).__name__}: {e}")
+        print(f"  [예상치 못한 오류] {type(e).__name__}: {e}")
         
     print("="*50)
 
@@ -176,11 +159,11 @@ def try_send_voice(voice_command):
 
 # 기존 함수들 (호환성을 위해 유지)
 def send_voice_to_server(voice_command):
-    """서버에 음성 명령어 전송 (UID 포함, 응답 상세 확인) - 호환성 유지"""
+    """서버에 음성 명령어 전송 (UID 포함, 응답 상세 확인)"""
     try_send_voice(voice_command)
 
 def send_gesture_to_server(gesture_label):
-    """서버에 제스처 신호 전송 (UID 포함, 음성과 동일한 형식) - 호환성 유지"""
+    """서버에 제스처 신호 전송 (UID 포함, 음성과 동일한 형식)"""
     try_send_gesture(gesture_label)
         
     print(f"{'='*50}")  # 구분선
@@ -238,28 +221,28 @@ action_to_gesture_map = {
 try:
     import pyttsx3
     TTS_AVAILABLE = True
-    print("✅ TTS 사용 가능 (음성 응답)")
+    print("  TTS 사용 가능 (음성 응답)")
 except ImportError:
     TTS_AVAILABLE = False
-    print("❌ TTS 없음 - pip install pyttsx3")
+    print("  TTS 없음 - pip install pyttsx3")
 
 # Windows SAPI 백업 시도
 try:
     import win32com.client
     SAPI_AVAILABLE = True
-    print("✅ Windows SAPI 사용 가능 (백업 TTS)")
+    print("  Windows SAPI 사용 가능 (백업 TTS)")
 except ImportError:
     SAPI_AVAILABLE = False
-    print("⚠️ Windows SAPI 없음 (선택사항)")
+    print("  Windows SAPI 없음 (선택사항)")
 
 # 사운드 재생용
 try:
     import winsound
     SOUND_AVAILABLE = True
-    print("✅ 시스템 사운드 사용 가능")
+    print("  시스템 사운드 사용 가능")
 except ImportError:
     SOUND_AVAILABLE = False
-    print("⚠️ 시스템 사운드 없음")
+    print("  시스템 사운드 없음")
 
 # ================== 사운드 재생 시스템 ==================
 def play_notification_sound(sound_type="system"):
@@ -271,26 +254,26 @@ def play_notification_sound(sound_type="system"):
         if sound_type == "system":
             # Windows 시스템 알림음 (띠롱 같은 소리)
             winsound.MessageBeep(winsound.MB_OK)
-            print("🔔 시스템 알림음 재생")
+            print("  시스템 알림음 재생")
         elif sound_type == "question":
             # 질문 소리 (다른 톤)
             winsound.MessageBeep(winsound.MB_ICONQUESTION)
-            print("🔔 질문 알림음 재생")
+            print("  질문 알림음 재생")
         elif sound_type == "beep":
             # 단순 비프음
             winsound.Beep(800, 200)  # 800Hz, 200ms
-            print("🔔 비프음 재생")
+            print("  비프음 재생")
         else:
             # 기본 시스템 알림음
             winsound.MessageBeep(-1)
-            print("🔔 기본 알림음 재생")
+            print("  기본 알림음 재생")
     except Exception as e:
         try:
             # 백업: 단순 비프음
             winsound.Beep(800, 200)
-            print("🔔 백업 비프음 재생")
+            print("  백업 비프음 재생")
         except Exception as e2:
-            print(f"🔇 사운드 재생 실패: {e2}")
+            print(f"  사운드 재생 실패: {e2}")
 
 def play_beep_sequence():
     """웨이크워드 감지 시 특별한 비프 시퀀스"""
@@ -310,9 +293,9 @@ def play_beep_sequence():
     
     try:
         threading.Thread(target=beep_sequence, daemon=True).start()
-        print("🎵 웨이크워드 멜로디 재생")
+        print("  웨이크워드 멜로디 재생")
     except Exception as e:
-        print(f"🔇 멜로디 스레드 실패: {e}")
+        print(f"  멜로디 스레드 실패: {e}")
         # 백업: 간단한 알림음
         play_notification_sound()
 
@@ -327,34 +310,34 @@ class TTSSystem:
 
     def _initialize(self):
         """TTS 엔진 초기화 (SAPI 우선, pyttsx3 백업)"""
-        print(f"🔊 TTS 초기화 시작...")
+        print(f"  TTS 초기화 시작...")
 
         # 1차 시도: Windows SAPI (더 안정적)
         if SAPI_AVAILABLE:
             try:
-                print("🔊 [1차] Windows SAPI 시도...")
+                print("  [1차] Windows SAPI 시도...")
                 test_sapi = win32com.client.Dispatch("SAPI.SpVoice")
-                print("✅ Windows SAPI 초기화 성공!")
+                print("  Windows SAPI 초기화 성공!")
                 self.sapi_engine = test_sapi
                 self.use_sapi = True
                 return
             except Exception as e:
-                print(f"❌ Windows SAPI 초기화 실패: {e}")
+                print(f"  Windows SAPI 초기화 실패: {e}")
 
         # 2차 시도: pyttsx3
         if TTS_AVAILABLE:
             try:
-                print("🔊 [2차] pyttsx3 시도...")
+                print("  [2차] pyttsx3 시도...")
                 test_engine = pyttsx3.init()
                 test_engine.setProperty('rate', 200)
                 test_engine.setProperty('volume', 0.9)
-                print("✅ pyttsx3 초기화 성공!")
+                print("  pyttsx3 초기화 성공!")
                 self.engine = test_engine
                 return
             except Exception as e:
-                print(f"❌ pyttsx3 초기화 실패: {e}")
+                print(f"  pyttsx3 초기화 실패: {e}")
 
-        print("❌ 모든 TTS 엔진 초기화 실패!")
+        print("  모든 TTS 엔진 초기화 실패!")
 
     def speak(self, text, async_mode=True):
         """텍스트를 음성으로 변환"""
@@ -362,13 +345,13 @@ class TTSSystem:
             return
 
         try:
-            print(f"🔊 TTS: '{text}' (엔진: {'SAPI' if self.use_sapi else 'pyttsx3'})")
+            print(f"  TTS: '{text}' (엔진: {'SAPI' if self.use_sapi else 'pyttsx3'})")
             if async_mode:
                 threading.Thread(target=self._speak_sync, args=(text,), daemon=True).start()
             else:
                 self._speak_sync(text)
         except Exception as e:
-            print(f"❌ TTS 오류: {e}")
+            print(f"  TTS 오류: {e}")
 
     def _speak_sync(self, text):
         """동기 음성 출력"""
@@ -382,7 +365,7 @@ class TTSSystem:
                     self.is_speaking = False
                     return
                 except Exception as e:
-                    print(f"❌ SAPI 출력 오류: {e}")
+                    print(f"  SAPI 출력 오류: {e}")
 
             # pyttsx3 사용
             if self.engine:
@@ -392,12 +375,12 @@ class TTSSystem:
                     self.is_speaking = False
                     return
                 except Exception as e:
-                    print(f"❌ pyttsx3 출력 오류: {e}")
+                    print(f"  pyttsx3 출력 오류: {e}")
 
             self.is_speaking = False
 
         except Exception as e:
-            print(f"❌ TTS 출력 치명적 오류: {e}")
+            print(f"  TTS 출력 치명적 오류: {e}")
             self.is_speaking = False
 
 # ================== 설정 ==================
@@ -414,26 +397,26 @@ def detect_wake_word(text):
     norm = normalize(text)
     for kw in WAKE_KEYWORDS:
         if kw in norm:
-            print(f"🎯 빠른 매칭: '{kw}' 포함됨")
+            print(f"  빠른 매칭: '{kw}' 포함됨")
             return True
     for pattern in WAKE_PATTERNS:
         if Levenshtein.distance(norm, normalize(pattern)) <= 2:
-            print(f"🎯 유사 웨이크워드 감지: '{text}' ≈ '{pattern}'")
+            print(f"  유사 웨이크워드 감지: '{text}' ≈ '{pattern}'")
             return True
     return False
 
 # ================== Colab으로 명령어 전송 ==================
 def send_to_colab(audio_path, colab_url):
     try:
-        print(f"📤 Colab에 오디오 전송 중... → {colab_url}/infer")
+        print(f"  Colab에 오디오 전송 중... → {colab_url}/infer")
         
         # 파일을 올바르게 열고 닫기
         with open(audio_path, 'rb') as audio_file:
             files = {'audio': audio_file}
             response = requests.post(f"{colab_url}/infer", files=files)
 
-        print("📥 응답 상태 코드:", response.status_code)
-        print("📩 응답 본문:", response.text)
+        print("  응답 상태 코드:", response.status_code)
+        print("  응답 본문:", response.text)
 
         # 단순 텍스트 파싱: "텍스트|액션" 또는 "ERROR|메시지"
         response_text = response.text.strip()
@@ -468,12 +451,12 @@ def record_audio(filename="command.wav", duration=3):
     recognizer = sr.Recognizer()
     mic = sr.Microphone()
     with mic as source:
-        print("🎙️ 명령어를 말하세요...")
+        print("  명령어를 말하세요...")
         recognizer.adjust_for_ambient_noise(source, duration=AMBIENT_DURATION)
         try:
             audio = recognizer.listen(source, timeout=5, phrase_time_limit=duration)
         except sr.WaitTimeoutError:
-            print("⌛ 타임아웃: 사용자가 말을 시작하지 않았습니다.")
+            print("  타임아웃: 사용자가 말을 시작하지 않았습니다.")
             return None
 
         with open(filename, "wb") as f:
@@ -483,14 +466,11 @@ def record_audio(filename="command.wav", duration=3):
 # ================== 웨이크워드 루프 ==================
 def wait_for_wake_word(recognizer, mic):
     with mic as source:
-        print("👂 웨이크워드 대기 중 ('브릿지')")
+        print("  웨이크워드 대기 중 ('브릿지')")
         recognizer.adjust_for_ambient_noise(source, duration=AMBIENT_DURATION)
         audio = recognizer.listen(source, timeout=5, phrase_time_limit=PHRASE_TIME_LIMIT)
         return audio
 
-# =============================================================================
-# 제스처 인식 설정 및 상수 (test_integrated_gesture_live.py에서 완전 복사)
-# =============================================================================
 
 # 통합 인식 설정
 INTEGRATED_CONFIG = {
@@ -538,9 +518,6 @@ COLORS = {
     'low': (0, 165, 255),            # 주황색 (낮은 신뢰도)
 }
 
-# =============================================================================
-# MLP 모델 클래스 (test_integrated_gesture_live.py에서 완전 복사)
-# =============================================================================
 
 class ExistingDataMLP(nn.Module):
     """기존 데이터용 MLP 모델"""
@@ -606,9 +583,6 @@ class ExistingDataMLP(nn.Module):
         
         return self.network(x)
 
-# =============================================================================
-# TCN 모델 클래스들 (test_integrated_gesture_live.py에서 완전 복사)
-# =============================================================================
 
 class Chomp1d(nn.Module):
     def __init__(self, chomp_size):
@@ -725,9 +699,6 @@ class SequenceTCN(nn.Module):
         
         return output
 
-# =============================================================================
-# 통합 인식 시스템 (test_integrated_gesture_live.py에서 완전 복사)
-# =============================================================================
 
 class IntegratedGestureRecognizer:
     """통합 제스처 인식기 (MLP + TCN)"""
@@ -749,7 +720,7 @@ class IntegratedGestureRecognizer:
         # 새로운 제스처 레이블 매핑 추가
         self.add_new_gesture_labels()
         
-        print(f"🔧 디바이스: {self.device}")
+        print(f"  디바이스: {self.device}")
         
     def reset_state(self):
         """상태 초기화"""
@@ -780,11 +751,11 @@ class IntegratedGestureRecognizer:
         self.display_gesture_name = ""
         self.display_time = 0
         
-        print("🔄 상태 및 화면 표시 초기화 완료")
+        print("  상태 및 화면 표시 초기화 완료")
     
     def add_new_gesture_labels(self):
         """새로운 제스처 레이블 매핑 추가"""
-        print("🔄 새로운 제스처 레이블 매핑 추가 중...")
+        print("  새로운 제스처 레이블 매핑 추가 중...")
         
         # MLP 레이블에 새로운 제스처 추가
         if self.mlp_labels is not None:
@@ -806,7 +777,7 @@ class IntegratedGestureRecognizer:
             
             # 기존 레이블과 병합
             self.mlp_labels.update(new_mlp_labels)
-            print(f"   ✅ MLP 레이블에 {len(new_mlp_labels)}개 제스처 추가")
+            print(f"     MLP 레이블에 {len(new_mlp_labels)}개 제스처 추가")
         
         # TCN 레이블에 새로운 제스처 추가
         if self.tcn_labels is not None:
@@ -828,17 +799,17 @@ class IntegratedGestureRecognizer:
             
             # 기존 레이블과 병합
             self.tcn_labels.update(new_tcn_labels)
-            print(f"   ✅ TCN 레이블에 {len(new_tcn_labels)}개 제스처 추가")
+            print(f"     TCN 레이블에 {len(new_tcn_labels)}개 제스처 추가")
         
-        print("   ✅ 새로운 제스처 레이블 매핑 완료")
+        print("     새로운 제스처 레이블 매핑 완료")
     
     def load_mlp_model(self):
         """MLP 모델 로딩"""
-        print("🔄 MLP 모델 로딩 중...")
+        print("  MLP 모델 로딩 중...")
         
         model_files = glob.glob(self.config['mlp_model_pattern'])
         if not model_files:
-            print(f"❌ MLP 모델을 찾을 수 없습니다: {self.config['mlp_model_pattern']}")
+            print(f"  MLP 모델을 찾을 수 없습니다: {self.config['mlp_model_pattern']}")
             return None, None, None
         
         try:
@@ -870,22 +841,22 @@ class IntegratedGestureRecognizer:
             with open(self.config['mlp_scaler_file'], 'rb') as f:
                 scaler = pickle.load(f)
             
-            print(f"   ✅ MLP 모델 로딩 완료")
+            print(f"     MLP 모델 로딩 완료")
             print(f"      - 정적 제스처: {list(labels.keys())}")
             
             return model, scaler, label_to_name
             
         except Exception as e:
-            print(f"   ❌ MLP 모델 로딩 실패: {e}")
+            print(f"     MLP 모델 로딩 실패: {e}")
             return None, None, None
     
     def load_tcn_model(self):
         """TCN 모델 로딩"""
-        print("🔄 TCN 모델 로딩 중...")
+        print("  TCN 모델 로딩 중...")
         
         model_files = glob.glob(self.config['tcn_model_pattern'])
         if not model_files:
-            print(f"❌ TCN 모델을 찾을 수 없습니다: {self.config['tcn_model_pattern']}")
+            print(f"  TCN 모델을 찾을 수 없습니다: {self.config['tcn_model_pattern']}")
             return None, None, None
         
         try:
@@ -922,13 +893,13 @@ class IntegratedGestureRecognizer:
             with open(self.config['tcn_scaler_file'], 'rb') as f:
                 scaler = pickle.load(f)
             
-            print(f"   ✅ TCN 모델 로딩 완료")
+            print(f"     TCN 모델 로딩 완료")
             print(f"      - 동적 제스처: {list(labels.keys())}")
             
             return model, scaler, label_to_name
             
         except Exception as e:
-            print(f"   ❌ TCN 모델 로딩 실패: {e}")
+            print(f"     TCN 모델 로딩 실패: {e}")
             return None, None, None
     
     def detect_movement(self, finger_tip):
@@ -969,7 +940,7 @@ class IntegratedGestureRecognizer:
                         # 움직임 시작
                         self.movement_start_time = current_time
                         self.is_moving = True
-                        print(f"🌀 움직임 감지 시작: avg={avg_movement:.3f}, max={max_movement:.3f}")
+                        print(f"  움직임 감지 시작: avg={avg_movement:.3f}, max={max_movement:.3f}")
                     
                     # 연속 움직임 시간 계산
                     self.continuous_movement_time = current_time - self.movement_start_time
@@ -978,7 +949,7 @@ class IntegratedGestureRecognizer:
                     if self.continuous_movement_time >= self.config['movement_duration_threshold']:
                         if self.mode != "dynamic":
                             self.mode = "dynamic"
-                            print(f"🌀 Dynamic 모드 진입 ({self.continuous_movement_time:.1f}초)")
+                            print(f"  Dynamic 모드 진입 ({self.continuous_movement_time:.1f}초)")
                         return True
                     
                 else:
@@ -986,7 +957,7 @@ class IntegratedGestureRecognizer:
                     if self.is_moving:
                         self.is_moving = False
                         self.last_stable_time = current_time
-                        print(f"🛑 움직임 정지 (지속시간: {self.continuous_movement_time:.1f}초)")
+                        print(f"  움직임 정지 (지속시간: {self.continuous_movement_time:.1f}초)")
                         
                         # Dynamic 모드였다면 Static으로 복귀하기 전 잠시 대기
                         if self.mode == "dynamic":
@@ -1003,7 +974,7 @@ class IntegratedGestureRecognizer:
                         if self.mode != "static":
                             self.mode = "static"
                             self.static_start_time = current_time
-                            print(f"🛑 Static 모드 복귀 (안정화: {stable_duration:.1f}초)")
+                            print(f"  Static 모드 복귀 (안정화: {stable_duration:.1f}초)")
                     
                     return False
         
@@ -1190,13 +1161,13 @@ class IntegratedGestureRecognizer:
         # 예측 결과 출력 (더 상세한 정보 포함)
         source_emoji = "🛑" if source == "static" else "🌀"
         mode_info = f"[{self.mode.upper()}]" if source == "dynamic" else ""
-        print(f"✅ {source_emoji} {source.upper()} 인식: {gesture_name.upper()} ({confidence:.1%}) {mode_info}")
+        print(f" {source_emoji} {source.upper()} 인식: {gesture_name.upper()} ({confidence:.1%}) {mode_info}")
         
         # 동적 제스처 인식 시 추가 정보
         if source == "dynamic" and self.config.get('debug_mode', False):
-            print(f"   📊 시퀀스 길이: {len(self.sequence_buffer)}/60")
-            print(f"   ⏱️ 움직임 시간: {self.continuous_movement_time:.1f}초")
-            print(f"   🎯 안정화 시간: {current_time - self.last_stable_time:.1f}초")
+            print(f"    시퀀스 길이: {len(self.sequence_buffer)}/60")
+            print(f"    움직임 시간: {self.continuous_movement_time:.1f}초")
+            print(f"    안정화 시간: {current_time - self.last_stable_time:.1f}초")
     
     def get_status(self):
         """현재 상태 반환"""
@@ -1218,9 +1189,6 @@ class IntegratedGestureRecognizer:
         else:
             return "MONITORING", "Detecting mode..."
 
-# =============================================================================
-# 특징 추출 (test_integrated_gesture_live.py에서 완전 복사)
-# =============================================================================
 
 def extract_hand_landmarks(image, hands_detector):
     """손 랜드마크 추출 (test_existing_mlp_live.py와 완전 동일)"""
@@ -1332,9 +1300,6 @@ def create_tcn_features_from_landmarks(landmarks_joint):
     except Exception as e:
         return None
 
-# =============================================================================
-# UI 및 시각화 (test_integrated_gesture_live.py에서 완전 복사)
-# =============================================================================
 
 def draw_landmarks_and_trail(image, landmarks, finger_tip, trail_points, handedness, confidence, mode):
     """손 랜드마크와 궤적 그리기"""
@@ -1373,7 +1338,6 @@ def draw_landmarks_and_trail(image, landmarks, finger_tip, trail_points, handedn
     return image
 
 def draw_integrated_ui(image, recognizer, fps=None):
-    """통합 인식 UI 그리기 (인식된 제스처 강조 표시)"""
     h, w = image.shape[:2]
     
     # 현재 상태 가져오기
@@ -1382,13 +1346,13 @@ def draw_integrated_ui(image, recognizer, fps=None):
     # 상태에 따른 색상
     if status == "STATIC_MODE":
         status_color = COLORS['static_mode']
-        status_text = "🛑 STATIC MODE"
+        status_text = " STATIC MODE"
     elif status == "DYNAMIC_MODE":
         status_color = COLORS['dynamic_mode']
-        status_text = "🌀 DYNAMIC MODE"
+        status_text = " DYNAMIC MODE"
     elif status == "MONITORING":
         status_color = COLORS['waiting']
-        status_text = "👁️ MONITORING"
+        status_text = " MONITORING"
     else:
         status_color = COLORS['waiting']
         status_text = "⚡ AUTO MODE"
@@ -1419,7 +1383,7 @@ def draw_integrated_ui(image, recognizer, fps=None):
     
     # 큰 제스처 표시 (화면 중앙 상단) - 글씨 크기 축소
     if show_prediction:
-        # 배경 박스 (작은 크기)
+        # 배경 박스
         overlay = image.copy()
         text_size = cv2.getTextSize(prediction_text, cv2.FONT_HERSHEY_SIMPLEX, 1.0, 2)[0]  # 크기 축소
         box_w = text_size[0] + 30
@@ -1430,60 +1394,57 @@ def draw_integrated_ui(image, recognizer, fps=None):
         cv2.rectangle(overlay, (box_x, box_y), (box_x + box_w, box_y + box_h), COLORS['bg'], -1)
         cv2.addWeighted(overlay, 0.8, image, 0.2, 0, image)
         
-        # 제스처 텍스트 (크기 축소)
+        # 제스처 텍스트 
         text_x = box_x + 15
         text_y = box_y + 30
         cv2.putText(image, prediction_text, (text_x, text_y), 
                    cv2.FONT_HERSHEY_SIMPLEX, 1.0, pred_color, 2)  # 크기와 두께 축소
         
-        # 신뢰도 표시 (크기 축소)
+        # 신뢰도 표시 
         conf_text = f"{recognizer.display_confidence:.1%}"
         cv2.putText(image, conf_text, (text_x, text_y + 20), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, pred_color, 1)  # 크기와 두께 축소
     
-    # 하단 상태 정보 박스 (크기 축소)
+    # 하단 상태 정보 박스 
     overlay = image.copy()
     cv2.rectangle(overlay, (10, h-120), (w-10, h-10), COLORS['bg'], -1)  # 높이 축소
     cv2.addWeighted(overlay, 0.7, image, 0.3, 0, image)
     
-    # 상태 텍스트 (크기 축소)
+    # 상태 텍스트 
     cv2.putText(image, status_text, 
                (20, h-90), cv2.FONT_HERSHEY_SIMPLEX, 0.6, status_color, 1)  # 크기와 두께 축소
     
-    # 상태 세부 정보 (크기 축소)
+    # 상태 세부 정보 
     cv2.putText(image, status_detail, 
                (20, h-70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS['text'], 1)  # 크기 축소
     
-    # 최근 인식 결과 (크기 축소)
+    # 최근 인식 결과 
     if show_prediction:
         recent_text = f"Recent: {prediction_text} ({recognizer.display_confidence:.1%})"
         cv2.putText(image, recent_text, 
                    (20, h-50), cv2.FONT_HERSHEY_SIMPLEX, 0.4, pred_color, 1)  # 크기 축소
     
-    # 버퍼 정보 (크기 축소)
+    # 버퍼 정보 
     static_count = len(recognizer.static_buffer)
     dynamic_count = len(recognizer.sequence_buffer)
     buffer_text = f"Buffer: Static({static_count}/10) Dynamic({dynamic_count}/60)"
     cv2.putText(image, buffer_text, 
                (20, h-35), cv2.FONT_HERSHEY_SIMPLEX, 0.35, COLORS['text'], 1)  # 크기 축소
     
-    # FPS 표시 (크기 축소)
+    # FPS 표시 
     if fps is not None and INTEGRATED_CONFIG['fps_display']:
         cv2.putText(image, f"FPS: {fps:.1f}", 
                    (w-80, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS['text'], 1)  # 크기와 위치 조정
     
-    # 제어 가이드 (크기 축소)
+    # 제어 가이드 
     cv2.putText(image, "Controls: R-Reset, D-Debug, Q-Quit | Voice: Wake+Command", 
                (20, h-15), cv2.FONT_HERSHEY_SIMPLEX, 0.35, COLORS['text'], 1)  # 크기 축소
     
     return image
 
-# =============================================================================
-# 음성 인식 스레드 (voice_recognition.py 메인 로직 활용)
-# =============================================================================
 
 class VoiceRecognitionThread(threading.Thread):
-    """음성 인식 전용 스레드 (voice_recognition.py 로직 사용)"""
+    """음성 인식 전용 스레드 """
     
     def __init__(self, colab_url=""):
         super().__init__()
@@ -1498,11 +1459,10 @@ class VoiceRecognitionThread(threading.Thread):
         self.recognizer = sr.Recognizer()
         self.mic = sr.Microphone()
         
-        print("🎤 음성 인식 스레드 초기화 완료")
+        print(" 음성 인식 스레드 초기화 완료")
     
     def run(self):
-        """음성 인식 메인 루프 (voice_recognition.py의 메인 while 루프와 동일)"""
-        print("🎤 음성 인식 스레드 시작")
+        print(" 음성 인식 스레드 시작")
         
         # 초기 지연으로 메인 스레드와 충돌 방지
         time.sleep(2)
@@ -1519,7 +1479,7 @@ class VoiceRecognitionThread(threading.Thread):
                     # 타임아웃은 정상적인 상황 - 계속 대기
                     continue
                 except Exception as e:
-                    print(f"🎤 웨이크워드 대기 오류: {e}")
+                    print(f" 웨이크워드 대기 오류: {e}")
                     time.sleep(1)
                     continue
                 
@@ -1532,16 +1492,16 @@ class VoiceRecognitionThread(threading.Thread):
                 # Whisper 없이 Google STT로 간단 인식 (웨이크워드 감지용)
                 try:
                     text = self.recognizer.recognize_google(audio, language='ko-KR')
-                    print(f"🗣️ 인식됨: {text}")
+                    print(f" 인식됨: {text}")
                 except sr.UnknownValueError:
-                    print("😶 인식 실패 (무음 또는 잡음)")
+                    print(" 인식 실패 (무음 또는 잡음)")
                     continue
                 except sr.RequestError as e:
-                    print(f"🌐 Google STT 서비스 오류: {e}")
+                    print(f" Google STT 서비스 오류: {e}")
                     continue
 
                 if detect_wake_word(text):
-                    print("🟡 웨이크워드 감지됨 → 명령어 녹음으로 전환")
+                    print(" 웨이크워드 감지됨 → 명령어 녹음으로 전환")
 
                     # 웨이크워드 감지 알림음 재생 (TTS보다 먼저)
                     play_beep_sequence()
@@ -1558,7 +1518,7 @@ class VoiceRecognitionThread(threading.Thread):
                         result = send_to_colab(cmd_audio, self.colab_url)
 
                         if "error" in result:
-                            print("❌ 오류:", result["error"])
+                            print(" 오류:", result["error"])
                             if self.tts_system and (self.tts_system.engine or self.tts_system.use_sapi):
                                 self.tts_system.speak("죄송합니다. 오류가 발생했습니다", async_mode=False)
                         else:
@@ -1570,33 +1530,33 @@ class VoiceRecognitionThread(threading.Thread):
                             # 서버에 음성 명령 전송 (새로운 쿨다운 시스템 적용)
                             if action and action in action_to_gesture_map:
                                 gesture_command = action_to_gesture_map[action]
-                                print(f"\n🎯 [음성] 명령어 인식됨: '{result['text']}'")
-                                print(f"🔄 제스처 매핑: {action} → {gesture_command}")
-                                print(f"🚀 서버 전송을 시작합니다...")
+                                print(f"\n [음성] 명령어 인식됨: '{result['text']}'")
+                                print(f" 제스처 매핑: {action} → {gesture_command}")
+                                print(f" 서버 전송을 시작합니다...")
                                 
                                 # 새로운 쿨다운 시스템으로 전송
                                 try_send_voice(gesture_command)
                                 
                             # 새로운 명령어 직접 매핑
                             elif action in ['ac_mode', 'ac_power', 'ac_tempDOWN', 'ac_tempUP', 'tv_power', 'tv_channelUP', 'tv_channelDOWN', 'spider_man', 'small_heart', 'thumbs_down', 'thumbs_up', 'thumbs_left', 'thumbs_right']:
-                                print(f"\n🎯 [음성] 새로운 명령어 인식됨: '{result['text']}'")
-                                print(f"🔄 직접 매핑: {action}")
-                                print(f"🚀 서버 전송을 시작합니다...")
+                                print(f"\n [음성] 새로운 명령어 인식됨: '{result['text']}'")
+                                print(f" 직접 매핑: {action}")
+                                print(f" 서버 전송을 시작합니다...")
                                 
                                 # 새로운 쿨다운 시스템으로 전송
                                 try_send_voice(action)
                                 
                             elif action:
                                 # 매핑되지 않은 액션도 직접 전송
-                                print(f"\n🎯 [음성] 명령어 인식됨: '{result['text']}'")
-                                print(f"🚀 직접 전송: {action}")
-                                print(f"⚠️ 주의: '{action}'은 제스처 매핑에 없습니다.")
+                                print(f"\n [음성] 명령어 인식됨: '{result['text']}'")
+                                print(f" 직접 전송: {action}")
+                                print(f" 주의: '{action}'은 제스처 매핑에 없습니다.")
                                 
                                 # 새로운 쿨다운 시스템으로 전송
                                 try_send_voice(action)
                                 
                             else:
-                                print(f"❌ 액션이 비어있거나 인식되지 않았습니다: '{action}'")
+                                print(f" 액션이 비어있거나 인식되지 않았습니다: '{action}'")
                             
                             # TTS로 명령어 실행 결과 출력
                             if self.tts_system and (self.tts_system.engine or self.tts_system.use_sapi):
@@ -1637,13 +1597,13 @@ class VoiceRecognitionThread(threading.Thread):
                                 else:
                                     self.tts_system.speak("명령을 처리했습니다", async_mode=False)
                     else:
-                        print("⚠️ Colab URL이 설정되지 않았습니다.")
+                        print(" Colab URL이 설정되지 않았습니다.")
 
             except KeyboardInterrupt:
-                print("🎤 음성 인식 스레드 종료")
+                print(" 음성 인식 스레드 종료")
                 break
             except Exception as e:
-                print(f"❌ 음성 인식 오류: {e}")
+                print(f" 음성 인식 오류: {e}")
                 time.sleep(1)
     
     def stop(self):
@@ -1652,36 +1612,33 @@ class VoiceRecognitionThread(threading.Thread):
         if self.tts_system and (self.tts_system.engine or self.tts_system.use_sapi):
             self.tts_system.speak("음성 제어 시스템을 종료합니다", async_mode=False)
 
-# =============================================================================
-# 메인 실행 함수 (test_integrated_gesture_live.py 메인 + 음성 스레드 추가)
-# =============================================================================
 
 def main():
     """메인 통합 함수 (제스처 + 음성)"""
-    print("🤖 통합 제스처 + 음성 인식 시스템")
+    print(" 통합 제스처 + 음성 인식 시스템")
     print("test_integrated_gesture_live.py + voice_recognition.py")
     print("=" * 60)
     
     # 음성 인식 설정
     colab_url = input("Colab ngrok URL을 입력하세요 (선택사항, Enter로 건너뛰기): ").strip()
     if not colab_url:
-        print("⚠️ Colab URL 없이 진행합니다. 음성 인식은 제한적으로 작동합니다.")
+        print(" Colab URL 없이 진행합니다. 음성 인식은 제한적으로 작동합니다.")
     
     # 통합 인식기 초기화 (test_integrated_gesture_live.py와 동일)
     recognizer = IntegratedGestureRecognizer(INTEGRATED_CONFIG)
     
     if not recognizer.mlp_model and not recognizer.tcn_model:
-        print("❌ MLP와 TCN 모델 모두 로딩에 실패했습니다.")
+        print(" MLP와 TCN 모델 모두 로딩에 실패했습니다.")
         return
     
     if not recognizer.mlp_model:
-        print("⚠️ MLP 모델이 없습니다. 동적 제스처만 인식됩니다.")
+        print(" MLP 모델이 없습니다. 동적 제스처만 인식됩니다.")
     
     if not recognizer.tcn_model:
-        print("⚠️ TCN 모델이 없습니다. 정적 제스처만 인식됩니다.")
+        print(" TCN 모델이 없습니다. 정적 제스처만 인식됩니다.")
     
     # MediaPipe 초기화 (test_integrated_gesture_live.py와 동일)
-    print("🔧 MediaPipe 초기화 중...")
+    print(" MediaPipe 초기화 중...")
     mp_hands = mp.solutions.hands
     hands = mp_hands.Hands(
         static_image_mode=False,
@@ -1690,12 +1647,12 @@ def main():
         min_tracking_confidence=INTEGRATED_CONFIG['min_tracking_confidence']
     )
     
-    # 웹캠 초기화 (test_integrated_gesture_live.py와 동일)
-    print("📹 웹캠 초기화 중...")
+    # 웹캠 초기화
+    print(" 웹캠 초기화 중...")
     cap = cv2.VideoCapture(0)
     
     if not cap.isOpened():
-        print("❌ 웹캠을 열 수 없습니다.")
+        print(" 웹캠을 열 수 없습니다.")
         return
     
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
@@ -1703,29 +1660,29 @@ def main():
     cap.set(cv2.CAP_PROP_FPS, 30)
     
     # 음성 인식 스레드 시작
-    print("🎤 음성 인식 스레드 초기화 중...")
+    print(" 음성 인식 스레드 초기화 중...")
     voice_thread = VoiceRecognitionThread(colab_url)
     voice_thread.start()
     
-    print("✅ 초기화 완료!")
-    print("\n🎯 통합 실시간 인식 시작!")
-    print("🔧 유연한 인식 방식:")
-    print("   🛑 정적 제스처: 기본 모드 - 손을 1초간 유지하면 즉시 인식")
-    print("   🌀 동적 제스처: 0.5초 이상 움직임 → 1초 후 인식 (손이 화면에 있어도 OK!)")
-    print("   🎤 음성 명령: '브릿지' + 명령어로 IoT 제어")
+    print(" 초기화 완료!")
+    print("\n 통합 실시간 인식 시작!")
+    print(" 유연한 인식 방식:")
+    print("    정적 제스처: 기본 모드 - 손을 1초간 유지하면 즉시 인식")
+    print("    동적 제스처: 0.5초 이상 움직임 → 1초 후 인식 (손이 화면에 있어도 OK!)")
+    print("    음성 명령: '브릿지' + 명령어로 IoT 제어")
     if SOUND_AVAILABLE:
-        print("   🔔 웨이크워드 알림: '띠-링-롱' 멜로디 재생")
+        print("    웨이크워드 알림: '띠-링-롱' 멜로디 재생")
     else:
-        print("   🔇 웨이크워드 알림: 사운드 없음 (winsound 모듈 필요)")
-    print("   ⚙️ 움직임 임계값: 0.04 (더 민감함 - 시계방향 회전도 감지)")
-    print("   🎯 빠른 반응: 3-8프레임 윈도우로 즉시 감지")
+        print("    웨이크워드 알림: 사운드 없음 (winsound 모듈 필요)")
+    print("    움직임 임계값: 0.04 (더 민감함 - 시계방향 회전도 감지)")
+    print("    빠른 반응: 3-8프레임 윈도우로 즉시 감지")
     print("   R - 상태 리셋")
     print("   D - 디버그 모드 토글")
     print("   Q - 종료")
     print("=" * 60)
-    print("💡 손을 카메라에 대고 제스처를 수행하거나 '브릿지' 음성 명령을 말하세요!")
+    print(" 손을 카메라에 대고 제스처를 수행하거나 '브릿지' 음성 명령을 말하세요!")
     if SOUND_AVAILABLE:
-        print("🎵 웨이크워드 '스마트 브릿지' 인식 시 알림음이 재생됩니다!")
+        print(" 웨이크워드 '스마트 브릿지' 인식 시 알림음이 재생됩니다!")
     
     fps_counter = deque(maxlen=30)
     frame_count = 0
@@ -1736,7 +1693,7 @@ def main():
             
             ret, frame = cap.read()
             if not ret:
-                print("❌ 프레임을 읽을 수 없습니다.")
+                print(" 프레임을 읽을 수 없습니다.")
                 break
             
             frame = cv2.flip(frame, 1)
@@ -1780,15 +1737,15 @@ def main():
                 else:
                     gesture_name = recognizer.tcn_labels.get(recognizer.last_prediction, f'dynamic_{recognizer.last_prediction}')
                 
-                print(f"🎯 [손동작] 제스처 인식: {gesture_name} ({recognizer.prediction_source.upper()})")
-                print(f"📊 인식 시간: {time.strftime('%H:%M:%S')}")
+                print(f" [손동작] 제스처 인식: {gesture_name} ({recognizer.prediction_source.upper()})")
+                print(f" 인식 시간: {time.strftime('%H:%M:%S')}")
                 
                 # nothing 제스처는 서버로 전송하지 않음
                 if gesture_name.lower() != 'nothing':
                     # 새로운 쿨다운 시스템으로 전송
                     try_send_gesture(gesture_name)
                 else:
-                    print("🚫 nothing 제스처는 서버로 전송하지 않습니다.")
+                    print(" nothing 제스처는 서버로 전송하지 않습니다.")
                 
                 # 전송 후 예측 결과 완전 초기화
                 recognizer.last_prediction = None
@@ -1811,20 +1768,20 @@ def main():
             key = cv2.waitKey(1) & 0xFF
             
             if key == ord('q'):
-                print("\n👋 사용자가 종료를 요청했습니다.")
+                print("\n 사용자가 종료를 요청했습니다.")
                 break
             elif key == ord('r'):
                 recognizer.reset_state()
-                print("🔄 상태 리셋")
+                print(" 상태 리셋")
             elif key == ord('d'):
                 INTEGRATED_CONFIG['debug_mode'] = not INTEGRATED_CONFIG['debug_mode']
-                print(f"🔧 디버그 모드: {'ON' if INTEGRATED_CONFIG['debug_mode'] else 'OFF'}")
+                print(f" 디버그 모드: {'ON' if INTEGRATED_CONFIG['debug_mode'] else 'OFF'}")
     
     except KeyboardInterrupt:
-        print("\n⏹️ 인터럽트로 종료됩니다.")
+        print("\n 인터럽트로 종료됩니다.")
     
     except Exception as e:
-        print(f"\n❌ 오류 발생: {e}")
+        print(f"\n 오류 발생: {e}")
         import traceback
         traceback.print_exc()
     
@@ -1836,11 +1793,11 @@ def main():
         cv2.destroyAllWindows()
         hands.close()
         
-        print("\n📊 세션 통계:")
+        print("\n 세션 통계:")
         if len(fps_counter) > 0:
             print(f"   - 평균 FPS: {np.mean(fps_counter):.1f}")
         print(f"   - 총 프레임: {frame_count:,}")
-        print("\n🎉 통합 인식 테스트 완료!")
+        print("\n 통합 인식 테스트 완료!")
 
 if __name__ == "__main__":
     main()
