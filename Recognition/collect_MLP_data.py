@@ -5,24 +5,20 @@ import os
 import pandas as pd
 
 
-# ✨ 사용자 설정
-gesture_label = 'vertical_V_2'  # ← 여기서 'one', 'two', 'thumbs_up', 'thumbs_down' 중 하나로 바꿔가며 사용
+gesture_label = 'vertical_V_2'  #  'one', 'two' 와 같은 제스쳐 이름을 바꿔가며 수집
 save_path = f'./gesture_data/main_data/transformer/data_{gesture_label}.csv'
 os.makedirs(os.path.dirname(save_path), exist_ok=True)
 max_num_hands = 1
-seq_length = 1  # 프레임 당 저장이므로 1
+seq_length = 1  
 
-# MediaPipe 설정
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 hands = mp_hands.Hands(max_num_hands=max_num_hands,
                        min_detection_confidence=0.5,
                        min_tracking_confidence=0.5)
 
-# 저장할 데이터 배열 초기화
 collected_data = []
 
-# 웹캠 연결
 cap = cv2.VideoCapture(0)
 
 print(f'[INFO] Start collecting "{gesture_label}" gesture data. Press "q" to stop.')
@@ -69,7 +65,6 @@ while cap.isOpened():
 cap.release()
 cv2.destroyAllWindows()
 
-# ✨ 저장
 collected_data = np.array(collected_data)
 df = pd.DataFrame(collected_data)
 df.to_csv(save_path, index=False)
