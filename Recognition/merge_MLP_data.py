@@ -1,9 +1,6 @@
-# merge_MLP_data.py
 """
-기존 수집된 데이터를 MLP 학습용으로 병합하는 스크립트
-./gesture_data/main_data/large_data의 CSV 파일들을 통합
+수집된 데이터를 MLP 학습용으로 병합하는 코드
 
-Author: AIoT Project Team
 """
 
 import pandas as pd
@@ -14,9 +11,6 @@ from collections import Counter
 import json
 from datetime import datetime
 
-# =============================================================================
-# 설정 및 제스처 매핑
-# =============================================================================
 
 # 제스처 라벨 매핑 (16개 클래스)
 GESTURE_LABELS = {
@@ -33,24 +27,17 @@ SOURCE_DIR = './gesture_data/main_data/large_data'
 OUTPUT_FILE = './gesture_data/merged_existing_data_16.npy'
 METADATA_FILE = './gesture_data/merged_data_metadata_16.json'
 
-# =============================================================================
-# 유틸리티 함수들
-# =============================================================================
 
 def extract_gesture_from_filename(filename):
     """파일명에서 제스처 이름 추출"""
-    # 파일명 패턴: data_[gesture_name]_[number].csv
     basename = os.path.basename(filename)
     if not basename.startswith('data_'):
         return None
     
-    # 'data_' 제거하고 마지막 '_숫자.csv' 제거
-    name_part = basename[5:]  # 'data_' 제거
+    name_part = basename[5:]  
     
-    # 마지막 '_숫자.csv' 패턴 제거
     parts = name_part.split('_')
     if len(parts) >= 2:
-        # 마지막 부분이 숫자.csv 형태인지 확인
         last_part = parts[-1]
         if last_part.replace('.csv', '').isdigit():
             gesture_name = '_'.join(parts[:-1])
@@ -64,14 +51,13 @@ def extract_gesture_from_filename(filename):
 def validate_csv_data(df, filename):
     """CSV 데이터 검증"""
     if df.empty:
-        print(f"   ❌ 빈 파일: {filename}")
+        print(f"    빈 파일: {filename}")
         return False
     
     if df.shape[1] != 100:
-        print(f"   ❌ 잘못된 열 수: {filename} - {df.shape[1]} (예상: 100)")
+        print(f"     잘못된 열 수: {filename} - {df.shape[1]} (예상: 100)")
         return False
     
-    # 첫 번째 행이 헤더인지 확인 (0,1,2,3... 패턴)
     first_row = df.iloc[0].values
     is_header = all(str(first_row[i]).replace('.0', '') == str(i) for i in range(min(10, len(first_row))))
     
@@ -79,43 +65,32 @@ def validate_csv_data(df, filename):
 
 def clean_data(df, has_header=True):
     """데이터 정리"""
-    # 헤더 제거
     if has_header:
         df = df.iloc[1:].reset_index(drop=True)
     
-    # 빈 행 제거
     df = df.dropna().reset_index(drop=True)
     
-    # 특징과 라벨 분리
-    features = df.iloc[:, :-1].values.astype(np.float32)  # 99차원 특징
-    raw_labels = df.iloc[:, -1].values  # 라벨
+    features = df.iloc[:, :-1].values.astype(np.float32)  
+    raw_labels = df.iloc[:, -1].values  
     
     return features, raw_labels
 
-# =============================================================================
-# 메인 병합 함수
-# =============================================================================
 
 def merge_existing_data():
     """기존 데이터 병합"""
-    print("🔄 기존 수집 데이터 병합 시작...")
-    print("=" * 60)
     
-    # 소스 디렉토리 확인
     if not os.path.exists(SOURCE_DIR):
-        print(f"❌ 소스 디렉토리를 찾을 수 없습니다: {SOURCE_DIR}")
+        print(f" 소스 디렉토리를 찾을 수 없습니다: {SOURCE_DIR}")
         return False
     
-    # CSV 파일들 찾기
     csv_files = glob.glob(os.path.join(SOURCE_DIR, "data_*.csv"))
     
     if not csv_files:
-        print(f"❌ CSV 파일을 찾을 수 없습니다: {SOURCE_DIR}")
+        print(f" CSV 파일을 찾을 수 없습니다: {SOURCE_DIR}")
         return False
     
-    print(f"📊 발견된 파일: {len(csv_files)}개")
+    print(f" 발견된 파일: {len(csv_files)}개")
     
-    # 제스처별 데이터 수집
     all_features = []
     all_labels = []
     gesture_stats = Counter()
@@ -124,13 +99,12 @@ def merge_existing_data():
     skipped_files = 0
     
     for file_path in sorted(csv_files):
-        print(f"\n📁 처리 중: {os.path.basename(file_path)}")
+        print(f"\n 처리 중: {os.path.basename(file_path)}")
         
-        # 제스처 이름 추출
         gesture_name = extract_gesture_from_filename(file_path)
         
         if gesture_name is None:
-            print(f"   ⚠️ 건너뜀 (알 수 없는 제스처): {os.path.basename(file_path)}")
+            print(f"    건너뜀 (알 수 없는 제스처): {os.path.basename(file_path)}")
             skipped_files += 1
             continue
         
@@ -150,7 +124,7 @@ def merge_existing_data():
             features, raw_labels = clean_data(df, has_header)
             
             if len(features) == 0:
-                print(f"   ❌ 유효한 데이터 없음")
+                print(f"    유효한 데이터 없음")
                 skipped_files += 1
                 continue
             
@@ -172,32 +146,27 @@ def merge_existing_data():
                 'size_mb': os.path.getsize(file_path) / (1024 * 1024)
             })
             
-            print(f"   ✅ 성공: {len(features):,} 샘플 ({gesture_name} → {gesture_label})")
+            print(f"    성공: {len(features):,} 샘플 ({gesture_name} → {gesture_label})")
             processed_files += 1
             
         except Exception as e:
-            print(f"   ❌ 오류: {e}")
+            print(f"    오류: {e}")
             skipped_files += 1
     
-    print(f"\n📊 파일 처리 결과:")
+    print(f"\n 파일 처리 결과:")
     print(f"   - 처리됨: {processed_files}개")
-    print(f"   - 건너뜀: {skipped_files}개")
     
     if not all_features:
-        print("❌ 처리된 데이터가 없습니다.")
+        print(" 처리된 데이터가 없습니다.")
         return False
     
     # 데이터 병합
-    print(f"\n🔗 데이터 병합 중...")
+    print(f"\n 데이터 병합 중...")
     combined_features = np.vstack(all_features)
     combined_labels = np.hstack(all_labels)
     
-    print(f"   - 총 샘플: {len(combined_features):,}")
-    print(f"   - 특징 차원: {combined_features.shape[1]}")
-    print(f"   - 라벨 범위: {combined_labels.min()} ~ {combined_labels.max()}")
-    
     # 제스처별 분포 확인
-    print(f"\n📊 제스처별 데이터 분포:")
+    print(f"\n 제스처별 데이터 분포:")
     total_samples = len(combined_features)
     for gesture_name in sorted(GESTURE_LABELS.keys()):
         label = GESTURE_LABELS[gesture_name]
@@ -211,14 +180,8 @@ def merge_existing_data():
         
         print(f"   {label:2d} {gesture_name:12s}: {count:6,} ({percentage:5.1f}%) {status}")
     
-    # 데이터 품질 확인 (메모리 효율적으로)
-    print(f"\n🔍 데이터 품질 확인:")
-    print(f"   - 특징 범위: [{combined_features.min():.3f}, {combined_features.max():.3f}]")
-    print(f"   - 평균: {combined_features.mean():.3f}")
     
-    # 메모리 효율적인 표준편차 계산
     try:
-        # 배치 단위로 계산하여 메모리 사용량 줄이기
         batch_size = 100000
         total_sum = 0
         total_count = 0
@@ -236,7 +199,6 @@ def merge_existing_data():
         print(f"   - 표준편차 계산 실패: {e}")
         overall_std = 0.0
     
-    # NaN, inf 검사 (배치 단위로)
     nan_count = 0
     inf_count = 0
     batch_size = 100000
@@ -246,23 +208,16 @@ def merge_existing_data():
         nan_count += np.isnan(batch).sum()
         inf_count += np.isinf(batch).sum()
     
-    print(f"   - NaN 값: {nan_count}")
-    print(f"   - 무한값: {inf_count}")
     
-    # 최종 데이터 저장
-    print(f"\n💾 데이터 저장 중...")
+    print(f"\n  데이터 저장 중...")
     final_data = np.column_stack([combined_features, combined_labels])
     
-    # 출력 디렉토리 생성
     os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
     
-    # numpy 파일로 저장
     np.save(OUTPUT_FILE, final_data)
     
     file_size = os.path.getsize(OUTPUT_FILE) / (1024 * 1024)
-    print(f"✅ 데이터 저장 완료: {OUTPUT_FILE}")
-    print(f"   - 파일 크기: {file_size:.1f} MB")
-    print(f"   - 형태: {final_data.shape}")
+    print(f"  데이터 저장 완료: {OUTPUT_FILE}")
     
     # 메타데이터 저장
     metadata = {
@@ -288,17 +243,16 @@ def merge_existing_data():
     with open(METADATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(metadata, f, indent=2, ensure_ascii=False)
     
-    print(f"✅ 메타데이터 저장: {METADATA_FILE}")
+    print(f"  메타데이터 저장: {METADATA_FILE}")
     
     return True
 
 def analyze_merged_data():
-    """병합된 데이터 분석"""
     if not os.path.exists(OUTPUT_FILE):
-        print(f"❌ 병합된 데이터가 없습니다: {OUTPUT_FILE}")
+        print(f" 병합된 데이터가 없습니다: {OUTPUT_FILE}")
         return
     
-    print(f"\n🔍 병합된 데이터 분석:")
+    print(f"\n 병합된 데이터 분석:")
     print("-" * 40)
     
     # 데이터 로딩
@@ -306,14 +260,14 @@ def analyze_merged_data():
     features = data[:, :-1]
     labels = data[:, -1].astype(int)
     
-    print(f"📊 기본 정보:")
+    print(f" 기본 정보:")
     print(f"   - 데이터 형태: {data.shape}")
     print(f"   - 총 샘플: {len(data):,}")
     print(f"   - 특징 차원: {features.shape[1]}")
     print(f"   - 클래스 수: {len(np.unique(labels))}")
     
     # 클래스별 분포
-    print(f"\n📈 클래스별 분포:")
+    print(f"\n 클래스별 분포:")
     unique_labels, counts = np.unique(labels, return_counts=True)
     for label, count in zip(unique_labels, counts):
         gesture_name = LABEL_TO_NAME.get(label, f'unknown_{label}')
@@ -325,26 +279,22 @@ def analyze_merged_data():
     max_count = counts.max()
     imbalance_ratio = max_count / min_count if min_count > 0 else float('inf')
     
-    print(f"\n⚖️ 클래스 균형:")
+    print(f"\n 클래스 균형:")
     print(f"   - 최소 샘플: {min_count:,}")
     print(f"   - 최대 샘플: {max_count:,}")
     print(f"   - 불균형 비율: {imbalance_ratio:.1f}:1")
     
     if imbalance_ratio > 5:
-        print(f"   ⚠️ 심한 불균형 감지! 데이터 증강 권장")
+        print(f"     심한 불균형 감지! 데이터 증강 권장")
     elif imbalance_ratio > 2:
-        print(f"   ⚠️ 약간의 불균형 존재")
+        print(f"    약간의 불균형 존재")
     else:
-        print(f"   ✅ 균형잡힌 분포")
+        print(f"    균형잡힌 분포")
 
-# =============================================================================
-# 메인 실행
-# =============================================================================
 
 def main():
     """메인 실행 함수"""
-    print("🔄 기존 수집 데이터 → MLP 학습용 변환")
-    print("data_collect_improved.py로 수집된 데이터 활용")
+    print(" 기존 수집 데이터 → MLP 학습용 변환")
     print("=" * 60)
     
     # 병합 실행
@@ -354,13 +304,10 @@ def main():
         # 분석 실행
         analyze_merged_data()
         
-        print(f"\n🎉 데이터 병합 완료!")
-        print(f"💡 다음 단계:")
-        print(f"   1. python train_existing_mlp.py로 모델 학습")
-        print(f"   2. 학습된 모델로 실시간 테스트")
-        print(f"   3. 필요시 부족한 제스처 추가 수집")
+        print(f"\n  데이터 병합 완료!")
+
     else:
-        print(f"\n❌ 데이터 병합 실패!")
+        print(f"\n  데이터 병합 실패!")
 
 if __name__ == "__main__":
 
