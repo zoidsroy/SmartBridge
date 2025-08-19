@@ -1,9 +1,6 @@
-# train_MLP.py
 """
 기존 수집된 데이터로 MLP 모델 학습
-merge_existing_data.py로 병합된 데이터 사용
 
-Author: AIoT Project Team
 """
 
 import numpy as np
@@ -22,10 +19,6 @@ import time
 import json
 from collections import Counter
 from datetime import datetime
-
-# =============================================================================
-# 설정 및 상수
-# =============================================================================
 
 # 제스처 라벨 매핑 (기존 데이터와 동일)
 GESTURE_LABELS = {
@@ -58,9 +51,6 @@ TRAINING_CONFIG = {
     'class_balancing': True,   # 클래스 가중치 적용
 }
 
-# =============================================================================
-# 데이터셋 클래스
-# =============================================================================
 
 class ExistingGestureDataset(Dataset):
     """기존 수집 데이터용 데이터셋"""
@@ -75,9 +65,6 @@ class ExistingGestureDataset(Dataset):
     def __getitem__(self, idx):
         return self.features[idx], self.labels[idx]
 
-# =============================================================================
-# MLP 모델 (기존 데이터용 최적화)
-# =============================================================================
 
 class ExistingDataMLP(nn.Module):
     """기존 데이터용 MLP 모델"""
@@ -140,30 +127,23 @@ class ExistingDataMLP(nn.Module):
         
         return self.network(x)
 
-# =============================================================================
-# 데이터 로딩 및 전처리
-# =============================================================================
 
 def load_existing_data(config):
-    """기존 병합 데이터 로딩"""
-    print("📁 기존 병합 데이터 로딩 중...")
+    print(" 기존 데이터 로딩 중...")
     
     data_file = config['data_file']
     metadata_file = config['metadata_file']
     
     # 데이터 파일 확인
     if not os.path.exists(data_file):
-        print(f"❌ 데이터 파일을 찾을 수 없습니다: {data_file}")
-        print("먼저 merge_existing_data.py를 실행해주세요.")
+        print(f"  데이터 파일을 찾을 수 없습니다: {data_file}")
         return None, None
     
     # 메타데이터 로딩
     if os.path.exists(metadata_file):
         with open(metadata_file, 'r', encoding='utf-8') as f:
             metadata = json.load(f)
-        print(f"   📋 메타데이터 로딩 완료")
-        print(f"   - 생성 날짜: {metadata.get('creation_date', 'Unknown')}")
-        print(f"   - 처리된 파일: {metadata.get('total_files_processed', 0)}개")
+        print(f"    메타데이터 로딩 완료")
     
     # 데이터 로딩
     try:
@@ -171,11 +151,7 @@ def load_existing_data(config):
         features = data[:, :-1].astype(np.float32)
         labels = data[:, -1].astype(int)
         
-        print(f"✅ 데이터 로딩 완료")
-        print(f"   - 총 샘플: {len(features):,}")
-        print(f"   - 특징 차원: {features.shape[1]}")
-        print(f"   - 라벨 범위: {labels.min()} ~ {labels.max()}")
-        print(f"   - 데이터 범위: [{features.min():.3f}, {features.max():.3f}]")
+        print(f"  데이터 로딩 완료")
         
         # 제스처별 분포
         label_counts = Counter(labels)
@@ -189,14 +165,13 @@ def load_existing_data(config):
         return features, labels
         
     except Exception as e:
-        print(f"❌ 데이터 로딩 실패: {e}")
+        print(f"  데이터 로딩 실패: {e}")
         return None, None
 
 def preprocess_data(features, labels, config):
     """데이터 전처리"""
-    print("\n🔄 데이터 전처리 중...")
+    print("\n  데이터 전처리 중...")
     
-    # 유효한 라벨만 필터링
     valid_mask = (labels >= 0) & (labels < config['num_classes'])
     features = features[valid_mask]
     labels = labels[valid_mask]
@@ -217,9 +192,6 @@ def preprocess_data(features, labels, config):
     scaler = StandardScaler()
     features_scaled = scaler.fit_transform(features)
     
-    print(f"   - 정규화 전 범위: [{features.min():.3f}, {features.max():.3f}]")
-    print(f"   - 정규화 후 범위: [{features_scaled.min():.3f}, {features_scaled.max():.3f}]")
-    print(f"   - 평균: {features_scaled.mean():.6f}, 표준편차: {features_scaled.std():.6f}")
     
     # 클래스 가중치 계산 (불균형 데이터 대응)
     class_weights = None
@@ -231,7 +203,7 @@ def preprocess_data(features, labels, config):
         # 균형 가중치 계산
         weights = {}
         for label in range(config['num_classes']):
-            count = label_counts.get(label, 1)  # 0개인 경우 1로 설정
+            count = label_counts.get(label, 1)  
             weights[label] = total_samples / (n_classes * count)
         
         class_weights = torch.FloatTensor([weights[i] for i in range(config['num_classes'])])
@@ -240,8 +212,7 @@ def preprocess_data(features, labels, config):
     return features_scaled, labels, scaler, class_weights
 
 def create_data_loaders(features, labels, config):
-    """데이터로더 생성 (계층화 분할)"""
-    print("\n📦 데이터로더 생성 중...")
+    print("\n  데이터로더 생성 중...")
     
     # 계층화 분할 (클래스 비율 유지)
     sss_test = StratifiedShuffleSplit(n_splits=1, test_size=config['test_ratio'], random_state=42)
@@ -305,9 +276,6 @@ def create_data_loaders(features, labels, config):
     
     return train_loader, val_loader, test_loader
 
-# =============================================================================
-# 학습 함수들
-# =============================================================================
 
 def train_epoch(model, train_loader, criterion, optimizer, device):
     """한 에포크 학습"""
@@ -368,13 +336,13 @@ def validate_epoch(model, val_loader, criterion, device):
 
 def train_model(model, train_loader, val_loader, config, device, class_weights=None):
     """모델 학습 메인 함수"""
-    print("\n🚀 기존 데이터 MLP 모델 학습 시작!")
+    print("\n   MLP 모델 학습 시작!")
     print("=" * 60)
     
     # 손실 함수와 옵티마이저
     if class_weights is not None:
         criterion = nn.CrossEntropyLoss(weight=class_weights.to(device))
-        print("⚖️ 클래스 가중치 적용됨")
+        print("  클래스 가중치 적용됨")
     else:
         criterion = nn.CrossEntropyLoss()
     
@@ -398,7 +366,7 @@ def train_model(model, train_loader, val_loader, config, device, class_weights=N
     best_model_state = None
     patience_counter = 0
     
-    print(f"🔧 모델 정보:")
+    print(f"  모델 정보:")
     print(f"   - 파라미터 수: {sum(p.numel() for p in model.parameters()):,}")
     print(f"   - 학습 샘플: {len(train_loader.dataset):,}")
     print(f"   - 검증 샘플: {len(val_loader.dataset):,}")
@@ -436,7 +404,7 @@ def train_model(model, train_loader, val_loader, config, device, class_weights=N
             best_val_acc = val_acc
             best_model_state = model.state_dict().copy()
             patience_counter = 0
-            status = "🎯 NEW BEST!"
+            status = " NEW BEST!"
         else:
             patience_counter += 1
             status = f"({patience_counter}/{config['early_stopping_patience']})"
@@ -460,7 +428,7 @@ def train_model(model, train_loader, val_loader, config, device, class_weights=N
     
     total_training_time = time.time() - training_start_time
     
-    print(f"\n✅ 학습 완료!")
+    print(f"\n  학습 완료!")
     print(f"   - 최고 검증 정확도: {best_val_acc:.2f}%")
     print(f"   - 총 학습 시간: {total_training_time/60:.1f}분")
     print(f"   - 에포크당 평균: {total_training_time/(epoch+1):.1f}초")
@@ -469,20 +437,20 @@ def train_model(model, train_loader, val_loader, config, device, class_weights=N
 
 def evaluate_model(model, test_loader, device):
     """모델 평가"""
-    print("\n📊 모델 평가 중...")
+    print("\n  모델 평가 중...")
     
     criterion = nn.CrossEntropyLoss()
     test_loss, test_acc, predictions, targets = validate_epoch(
         model, test_loader, criterion, device
     )
     
-    print(f"🎯 테스트 결과:")
+    print(f"  테스트 결과:")
     print(f"   - 손실: {test_loss:.4f}")
     print(f"   - 정확도: {test_acc:.2f}%")
     
     # 상세 분류 보고서
     target_names = [LABEL_TO_NAME.get(i, f'class_{i}') for i in range(TRAINING_CONFIG['num_classes'])]
-    print(f"\n📋 상세 분류 보고서:")
+    print(f"\n  상세 분류 보고서:")
     print(classification_report(
         targets, predictions, 
         target_names=target_names,
@@ -491,7 +459,7 @@ def evaluate_model(model, test_loader, device):
     
     return test_acc, predictions, targets
 
-def plot_results(history, predictions, targets, save_path='existing_mlp_results.png'):
+def plot_results(history, predictions, targets, save_path='mlp_results.png'):
     """결과 시각화"""
     fig, axes = plt.subplots(2, 2, figsize=(15, 10))
     
@@ -558,7 +526,7 @@ def plot_results(history, predictions, targets, save_path='existing_mlp_results.
     plt.tight_layout()
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.show()
-    print(f"📊 결과 그래프가 '{save_path}'에 저장되었습니다.")
+    print(f" 결과 그래프가 '{save_path}'에 저장되었습니다.")
 
 def save_model(model, scaler, config, test_accuracy):
     """모델과 전처리기 저장"""
@@ -587,19 +555,15 @@ def save_model(model, scaler, config, test_accuracy):
     print(f"   - 스케일러: {scaler_path}")
     print(f"   - 테스트 정확도: {test_accuracy:.2f}%")
 
-# =============================================================================
-# 메인 실행 함수
-# =============================================================================
 
 def main():
     """메인 실행 함수"""
-    print("🤖 기존 수집 데이터 MLP 모델 학습")
-    print("data_collect_improved.py로 수집된 데이터 활용")
+    print("  MLP 모델 학습")
     print("=" * 60)
     
     # 디바이스 설정
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"🔧 사용 디바이스: {device}")
+    print(f"  사용 디바이스: {device}")
     
     # 데이터 로딩
     features, labels = load_existing_data(TRAINING_CONFIG)
@@ -617,7 +581,7 @@ def main():
     )
     
     # 모델 생성
-    print(f"\n🧠 기존 데이터 MLP 모델 생성...")
+    print(f"\n  기존 데이터 MLP 모델 생성...")
     model = ExistingDataMLP(
         input_dim=TRAINING_CONFIG['input_dim'],
         num_classes=TRAINING_CONFIG['num_classes'],
@@ -647,10 +611,9 @@ def main():
     # 모델 저장
     save_model(trained_model, scaler, TRAINING_CONFIG, test_accuracy)
     
-    print(f"\n🎉 학습 완료!")
+    print(f"\n  학습 완료!")
     print(f"   - 최종 테스트 정확도: {test_accuracy:.2f}%")
-    print(f"   - 모델 파일: existing_mlp_model_{test_accuracy:.1f}pct.pth")
-    print(f"   - 다음 단계: 실시간 테스트용 코드 작성")
+    print(f"   - 모델 파일: mlp_model_{test_accuracy:.1f}pct.pth")
 
 if __name__ == "__main__":
 
