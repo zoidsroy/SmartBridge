@@ -215,15 +215,16 @@ env/
 .DS_Store
 
 # Firebase
-firebase_config.json
+flask_mqtt/firebase_config.json
 
 # ngrok
 ngrok.exe
 ngrok.yml
 .ngrok2/
-tmp_url.txt
+flask_mqtt/tmp_url.txt
 
-train_state.json
+flask_mqtt/train_state.json
 
 # model file
 *.pkl
+flask_mqtt/models
