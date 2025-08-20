@@ -208,6 +208,12 @@ flutter run
 
 ---
 
+## 시연 영상
+
+-유투브 링크: https://youtu.be/hTZr1kJplH8?si=2JTG4JiwHE3kMMD3
+
+---
+
 <p align="center">
   <b>SmartBridge로 모든 가전을 스마트하게! 🏠✨</b>
 </p>
