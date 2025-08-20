@@ -16,7 +16,7 @@ def unmapped_controls_func(uid, mode):
     query = ircode_ref.where('device', '==', mode).stream()
 
     all_controls = set()
-    if mode == "tv":
+    if mode == "tv" or mode == "curtain":
         all_controls.add("power") # 예외 : tv power 강제 포함
 
     for doc in query:

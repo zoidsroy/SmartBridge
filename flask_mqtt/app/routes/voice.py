@@ -15,8 +15,6 @@ def handle_voice():
     voice = data.get("voice")
     uid = data.get("uid")
 
-    print(f"voice: {voice}")
-
     if not voice or not uid:
         return jsonify({"error" : "uid와 voice 명령어가 모두 필요합니다"}), 400
 
@@ -30,7 +28,7 @@ def handle_voice():
     device, control = voice.split("_")
     description = voice_doc.to_dict().get("description", f"{device}_{control}")
 
-    if control in ["on", "off"]:
+    if control in ["on", "off", "open", "close"]:
         control = "power"
 
     # tv 전원 순차 전송

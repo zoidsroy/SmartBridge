@@ -221,3 +221,9 @@ firebase_config.json
 ngrok.exe
 ngrok.yml
 .ngrok2/
+tmp_url.txt
+
+train_state.json
+
+# model file
+*.pkl
