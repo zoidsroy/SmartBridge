@@ -24,12 +24,6 @@ def handle_gesture():
 
     firestore_db = current_app.config['FIRESTORE_DB']
 
-    if gesture == "clockwise":
-        gesture = "counter_clockwise"
-
-    if gesture == "counter_clockwise":
-        gesture = "clockwise"
-
     # 인식된 손동작 업데이트
     db.reference(f"user_info/{uid}").update({
         "last_gesture": gesture,
