@@ -93,9 +93,6 @@ class _DeviceListScreenState extends State<DeviceListScreen> {
 
                     return GestureDetector(
                       onTap: () {
-                        print('🔍 기기 클릭됨: ${devices[index]} ($deviceKey)');
-                        print('🔗 연결 상태: $isConnected');
-
                         if (!isConnected) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('사용할 수 없는 상태입니다')),

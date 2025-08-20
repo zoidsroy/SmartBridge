@@ -30,9 +30,6 @@ class _ModeGestureCustomizationScreenState
   @override
   void initState() {
     super.initState();
-    print('🚀 ModeGestureCustomizationScreen 초기화 시작');
-    print('📱 전달받은 keyName: ${widget.keyName}');
-    print('📱 전달받은 deviceName: ${widget.deviceName}');
     _loadData();
   }
 
@@ -42,7 +39,6 @@ class _ModeGestureCustomizationScreenState
     });
 
     try {
-      print('🔍 모드 제스처 커스터마이징 데이터 로딩 시작...');
       print('📱 기기 ID: ${widget.keyName}');
       print('📱 기기 이름: ${widget.deviceName}');
 

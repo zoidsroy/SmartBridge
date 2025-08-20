@@ -14,8 +14,6 @@ class RecommendationApiService {
   /// 자동 제스처 추천 API 호출
   static Future<Map<String, dynamic>?> getGestureRecommendations() async {
     try {
-      print('🌐 API 호출 시작: $apiUrl');
-
       final response = await http.get(
         Uri.parse(apiUrl),
         headers: {
@@ -32,14 +30,9 @@ class RecommendationApiService {
         const Duration(seconds: 15), // 타임아웃을 15초로 증가
       );
 
-      print('📡 API 응답 상태 코드: ${response.statusCode}');
-      print('📝 API 응답 본문 길이: ${response.body.length} characters');
-
       if (response.statusCode == 200) {
         try {
           final data = json.decode(response.body) as Map<String, dynamic>;
-          print('✅ 실제 API 호출 성공: ${data.keys}');
-          print('📊 추천 개수: ${(data['recommendations'] as List?)?.length ?? 0}');
           return data;
         } catch (parseError) {
           print('❌ JSON 파싱 오류: $parseError');

@@ -16,7 +16,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
   Map<String, dynamic>? _backendRecommendations; // 백엔드 API에서 받은 추천
   bool _isLoading = true;
   bool _isApiLoading = false; // API 로딩 상태
-  String _selectedTab = '분석';
+  String _selectedTab = '추천';
 
   @override
   void initState() {
@@ -28,15 +28,12 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
     setState(() => _isLoading = true);
 
     try {
-      print('📊 추천 데이터 로딩 시작...');
-
       // 기존 로컬 데이터 로딩
       await _loadLocalData();
 
       // 백엔드 API 추천 데이터 로딩 (병렬 실행)
       _loadBackendApiRecommendations();
     } catch (e) {
-      print('❌ 전체 데이터 로딩 실패: $e');
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -53,9 +50,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
     // 사용자 패턴 분석 (로컬만)
     Map<String, dynamic> patterns;
     try {
-      print('📊 사용자 패턴 분석 중...');
       patterns = await RecommendationService.analyzeUserPatterns();
-      print('📊 패턴 분석 완료: ${patterns['totalLogs']}개 로그');
     } catch (e) {
       print('⚠️ 패턴 분석 실패: $e');
       patterns = {
@@ -145,7 +140,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    '📊 사용 패턴 & 추천',
+                    '🤖 AI 실시간 추천',
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -153,11 +148,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
                   // 탭 버튼들
                   Row(
                     children: [
-                      _buildTabButton('분석'),
-                      const SizedBox(width: 8),
                       _buildTabButton('추천'),
-                      const SizedBox(width: 8),
-                      _buildTabButton('통계'),
                       const Spacer(),
                       // 테스트 데이터 생성 버튼
                       IconButton(
@@ -241,129 +232,7 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
   }
 
   Widget _buildTabContent() {
-    switch (_selectedTab) {
-      case '분석':
-        return _buildAnalysisTab();
-      case '추천':
-        return _buildRecommendationTab();
-      case '통계':
-        return _buildStatsTab();
-      default:
-        return const SizedBox();
-    }
-  }
-
-  Widget _buildAnalysisTab() {
-    if (_userPatterns == null) {
-      return const Center(child: Text('데이터가 없습니다'));
-    }
-
-    final patterns = _userPatterns!;
-    final deviceUsage = patterns['deviceUsage'] as Map<String, int>? ?? {};
-    final gestureUsage = patterns['gestureUsage'] as Map<String, int>? ?? {};
-    final timePatterns = patterns['timePatterns'] as Map<String, int>? ?? {};
-
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        // 요약 카드
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '🎯 사용 패턴 요약',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 12),
-                _buildSummaryRow(
-                    '가장 많이 사용하는 기기', patterns['mostUsedDevice']?.toString()),
-                _buildSummaryRow(
-                    '선호하는 제스처', patterns['mostUsedGesture']?.toString()),
-                _buildSummaryRow(
-                    '주로 사용하는 시간', patterns['favoriteTime']?.toString()),
-                _buildSummaryRow('총 로그 수', '${patterns['totalLogs'] ?? 0}개'),
-              ],
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        // 기기 사용량
-        if (deviceUsage.isNotEmpty) ...[
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '📱 기기별 사용량',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  ...deviceUsage.entries.map((entry) => _buildUsageBar(
-                      entry.key,
-                      entry.value,
-                      deviceUsage.values.reduce((a, b) => a > b ? a : b))),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-
-        // 제스처 사용량
-        if (gestureUsage.isNotEmpty) ...[
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '✋ 제스처별 사용량',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  ...gestureUsage.entries.map((entry) => _buildUsageBar(
-                      _getGestureName(entry.key),
-                      entry.value,
-                      gestureUsage.values.reduce((a, b) => a > b ? a : b))),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-
-        // 시간대 패턴
-        if (timePatterns.isNotEmpty) ...[
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    '🕐 시간대별 사용 패턴',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  ...timePatterns.entries.map((entry) => _buildUsageBar(
-                      entry.key,
-                      entry.value,
-                      timePatterns.values.reduce((a, b) => a > b ? a : b))),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ],
-    );
+    return _buildRecommendationTab();
   }
 
   Widget _buildRecommendationTab() {
@@ -899,110 +768,6 @@ class _RecommendationScreenState extends State<RecommendationScreen> {
         ),
       );
     }
-  }
-
-  Widget _buildStatsTab() {
-    if (_dailyStats == null) {
-      return const Center(child: Text('통계 데이터가 없습니다'));
-    }
-
-    final dailyStats =
-        _dailyStats!['dailyStats'] as Map<String, dynamic>? ?? {};
-    final totalDays = _dailyStats!['totalDays'] as int? ?? 0;
-
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '📈 일별 사용 통계',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '총 $totalDays일간의 사용 기록',
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        if (dailyStats.isEmpty)
-          const Card(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('일별 통계 데이터가 없습니다'),
-            ),
-          )
-        else
-          ...dailyStats.entries.map((dateEntry) {
-            final date = dateEntry.key;
-            final deviceData = dateEntry.value as Map<String, int>;
-
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ExpansionTile(
-                title: Text(date),
-                subtitle:
-                    Text('${deviceData.values.fold(0, (a, b) => a + b)}회 사용'),
-                children: deviceData.entries.map((deviceEntry) {
-                  return ListTile(
-                    dense: true,
-                    title: Text(deviceEntry.key),
-                    trailing: Text('${deviceEntry.value}회'),
-                  );
-                }).toList(),
-              ),
-            );
-          }),
-      ],
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String? value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
-          Text(value?.isEmpty == true || value == null ? '데이터 없음' : value!,
-              style: const TextStyle(color: Colors.blue)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUsageBar(String label, int value, int maxValue) {
-    final percentage = maxValue > 0 ? value / maxValue : 0.0;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label),
-              Text('$value회'),
-            ],
-          ),
-          const SizedBox(height: 4),
-          LinearProgressIndicator(
-            value: percentage,
-            backgroundColor: Colors.grey[300],
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-          ),
-        ],
-      ),
-    );
   }
 
   String _getGestureName(String gesture) {

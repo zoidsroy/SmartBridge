@@ -16,7 +16,6 @@ class RemoteControlService {
   static void setArduinoIP(String ip, {int port = 80}) {
     _arduinoIP = ip;
     _arduinoPort = port;
-    print('🔧 아두이노 IP 설정됨: $_arduinoIP:$_arduinoPort');
   }
 
   // 📱 현재 아두이노 IP 가져오기
@@ -27,11 +26,9 @@ class RemoteControlService {
   static Future<Map<String, Map<String, dynamic>>> getIRCodes(
       String deviceId) async {
     try {
-      print('🔍 $deviceId IR 코드 가져오는 중...');
       final snapshot = await _database.child('ir_codes/$deviceId').once();
 
       if (!snapshot.snapshot.exists) {
-        print('⚠️ $deviceId IR 코드가 없음');
         return {};
       }
 
@@ -43,7 +40,6 @@ class RemoteControlService {
             )),
       );
 
-      print('✅ $deviceId IR 코드 ${irCodes.length}개 로드됨');
       return irCodes;
     } catch (e) {
       print('❌ IR 코드 가져오기 오류: $e');

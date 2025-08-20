@@ -18,20 +18,15 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return false;
       }
 
-      print('💾 모드 진입 제스처 저장: $deviceId (사용자: $uid)');
-      print('📝 저장할 제스처: $gestureKey');
-      print('🗄️ 저장 경로: users/$uid/mode_gesture/$deviceId');
 
       // 사용자별 컬렉션 존재 여부 확인 및 생성
       await _ensureUserCollectionsExist(uid);
 
       if (gestureKey == null || gestureKey.isEmpty) {
         // 제스처가 없으면 해당 제스처 문서를 찾아서 삭제
-        print('🔍 기존 제스처 매핑 찾는 중...');
         final snapshot = await _firestore
             .collection('users')
             .doc(uid)
@@ -41,12 +36,9 @@ class GestureService {
 
         for (final doc in snapshot.docs) {
           await doc.reference.delete();
-          print('✅ 기존 제스처 매핑 삭제: ${doc.id}');
         }
-        print('✅ 모드 진입 제스처 삭제 완료');
       } else {
         // 기존 매핑이 있으면 먼저 삭제
-        print('🔍 기존 제스처 매핑 찾아서 삭제 중...');
         final snapshot = await _firestore
             .collection('users')
             .doc(uid)
@@ -56,7 +48,6 @@ class GestureService {
 
         for (final doc in snapshot.docs) {
           await doc.reference.delete();
-          print('✅ 기존 제스처 매핑 삭제: ${doc.id}');
         }
 
         // 새로운 구조로 저장: gestureKey → {device: "deviceId"}
@@ -68,12 +59,10 @@ class GestureService {
             .set({
           'device': deviceId,
         });
-        print('✅ 모드 진입 제스처 저장 완료: $gestureKey → {device: $deviceId}');
       }
 
       return true;
     } catch (e) {
-      print('❌ 모드 진입 제스처 저장 오류: $e');
       return false;
     }
   }
@@ -83,14 +72,11 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return false;
       }
 
-      print('🗑️ 모드 진입 제스처 삭제 시작: $deviceId (사용자: $uid)');
 
       // 새로운 구조에 맞춰 해당 device를 가진 문서들을 찾아서 삭제
-      print('🔍 삭제할 제스처 매핑 찾는 중...');
       final snapshot = await _firestore
           .collection('users')
           .doc(uid)
@@ -100,13 +86,10 @@ class GestureService {
 
       for (final doc in snapshot.docs) {
         await doc.reference.delete();
-        print('✅ 제스처 매핑 삭제: ${doc.id} → {device: $deviceId}');
       }
 
-      print('✅ 모드 진입 제스처 삭제 완료');
       return true;
     } catch (e) {
-      print('❌ 모드 진입 제스처 삭제 오류: $e');
       return false;
     }
   }
@@ -271,8 +254,6 @@ class GestureService {
     };
 
     // 디버깅을 위한 로그 추가
-    print('🏠 getDeviceActions() 호출됨');
-    print('📊 지원되는 기기: ${actions.keys.toList()}');
 
     return actions;
   }
@@ -283,16 +264,12 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return false;
       }
 
-      print('💾 제스처 매핑 저장 시작: $deviceId (사용자: $uid)');
-      print('📝 제스처: $gestureId, 제어: $control, 라벨: $label');
 
       // 1. 백엔드 API 호출 (우선) - 백엔드가 자동으로 Firestore와 RTDB에 저장
       try {
-        print('🌐 백엔드 API 호출 중...');
         final success = await BackendApiService.registerMapping(
           uid: uid,
           gesture: gestureId,
@@ -301,18 +278,14 @@ class GestureService {
         );
 
         if (success) {
-          print('✅ 백엔드 API 호출 성공 - 백엔드가 자동으로 데이터 저장 완료');
           return true;
         } else {
-          print('⚠️ 백엔드 API 호출 실패');
           return false;
         }
       } catch (e) {
-        print('❌ 백엔드 API 호출 중 오류: $e');
         return false;
       }
     } catch (e) {
-      print('❌ 제스처 매핑 저장 오류: $e');
       return false;
     }
   }
@@ -323,16 +296,12 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return false;
       }
 
-      print('🔄 제스처 매핑 업데이트: $deviceId (사용자: $uid)');
-      print('📝 제스처: $gestureId, 제어: $control, 라벨: $label');
 
       // 1. 백엔드 API 호출 (우선) - 백엔드가 자동으로 Firestore와 RTDB에 저장
       try {
-        print('🌐 백엔드 API 호출 중...');
         final success = await BackendApiService.updateMapping(
           uid: uid,
           mode: deviceId,
@@ -341,18 +310,14 @@ class GestureService {
         );
 
         if (success) {
-          print('✅ 백엔드 API 호출 성공 - 백엔드가 자동으로 데이터 업데이트 완료');
           return true;
         } else {
-          print('⚠️ 백엔드 API 호출 실패');
           return false;
         }
       } catch (e) {
-        print('❌ 백엔드 API 호출 중 오류: $e');
         return false;
       }
     } catch (e) {
-      print('❌ 제스처 매핑 업데이트 오류: $e');
       return false;
     }
   }
@@ -363,12 +328,9 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return false;
       }
 
-      print('🗑️ 제스처 매핑 삭제: $deviceId (사용자: $uid)');
-      print('📝 제스처: $gestureId');
 
       // 백엔드에 삭제 API가 없으므로 직접 Firebase에서 삭제
 
@@ -378,9 +340,7 @@ class GestureService {
         await database
             .ref('control_gesture/$uid/$deviceId/$gestureId')
             .remove();
-        print('✅ Realtime Database에서 삭제 완료');
       } catch (e) {
-        print('⚠️ Realtime Database 삭제 실패: $e');
       }
 
       // 2. Firestore에서 삭제 (백엔드 구조: users/{uid}/control_gesture/{mode}_{control})
@@ -401,17 +361,13 @@ class GestureService {
                 .collection('control_gesture')
                 .doc('${deviceId}_$control')
                 .delete();
-            print('✅ Firestore에서 삭제 완료: ${deviceId}_$control');
           }
         }
       } catch (e) {
-        print('⚠️ Firestore 삭제 실패: $e');
       }
 
-      print('✅ 제스처 매핑 삭제 완료');
       return true;
     } catch (e) {
-      print('❌ 제스처 매핑 삭제 오류: $e');
       return false;
     }
   }
@@ -421,7 +377,6 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return [];
       }
 
@@ -442,10 +397,8 @@ class GestureService {
         }
       }
 
-      print('✅ 사용 중인 제스처 조회 완료: ${usedGestures.length}개');
       return usedGestures;
     } catch (e) {
-      print('❌ 사용 중인 제스처 조회 오류: $e');
       return [];
     }
   }
@@ -459,10 +412,8 @@ class GestureService {
           .where((gesture) => !usedGestures.contains(gesture))
           .toList();
 
-      print('✅ 사용하지 않는 제스처 조회 완료: ${unusedGestures.length}개');
       return unusedGestures;
     } catch (e) {
-      print('❌ 사용하지 않는 제스처 조회 오류: $e');
       return [];
     }
   }
@@ -473,11 +424,9 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return {};
       }
 
-      print('🔍 기기별 제스처 매핑 조회: $deviceId (사용자: $uid)');
 
       // 백엔드 구조에 맞춰 Realtime Database에서 직접 조회 (control_gesture/{uid}/{mode}/{gesture})
       try {
@@ -485,7 +434,6 @@ class GestureService {
         final snapshot =
             await database.ref('control_gesture/$uid/$deviceId').once();
 
-        print('📡 RTDB 매핑 조회 응답: ${snapshot.snapshot.exists}');
 
         if (snapshot.snapshot.exists && snapshot.snapshot.value != null) {
           final data = snapshot.snapshot.value as Map<dynamic, dynamic>;
@@ -505,18 +453,14 @@ class GestureService {
             }
           }
 
-          print('✅ 기기별 제스처 매핑 조회 완료: ${mapping.length}개');
           return mapping;
         } else {
-          print('ℹ️ 해당 기기에 설정된 제스처 매핑이 없습니다');
           return {};
         }
       } catch (e) {
-        print('❌ 기기별 제스처 매핑 조회 오류: $e');
         return {};
       }
     } catch (e) {
-      print('❌ 기기별 제스처 매핑 조회 오류: $e');
       return {};
     }
   }
@@ -539,7 +483,6 @@ class GestureService {
 
       return result;
     } catch (e) {
-      print('❌ 제어 제스처 매핑 조회 오류: $e');
       return {};
     }
   }
@@ -550,7 +493,6 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return false;
       }
 
@@ -564,12 +506,10 @@ class GestureService {
           .get();
 
       if (snapshot.docs.isEmpty) {
-        print('❌ 사용 횟수를 증가시킬 문서를 찾을 수 없음');
         return false;
       }
 
       final docId = snapshot.docs.first.id;
-      print('📄 사용 횟수 증가할 문서 ID: $docId');
 
       await _firestore
           .collection('users')
@@ -581,10 +521,8 @@ class GestureService {
         'lastUsed': FieldValue.serverTimestamp(),
       });
 
-      print('✅ 사용 횟수 증가 완료');
       return true;
     } catch (e) {
-      print('❌ 사용 횟수 증가 오류: $e');
       return false;
     }
   }
@@ -616,12 +554,9 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return false;
       }
 
-      print('🎯 제스처 실행: $deviceId (사용자: $uid)');
-      print('🤚 제스처: $gestureId');
 
       // 사용 횟수 증가
       await incrementGestureUsage(deviceId, gestureId);
@@ -632,14 +567,11 @@ class GestureService {
           'device_id': deviceId,
           'gesture_id': gestureId,
         });
-        print('✅ 백엔드 API 호출 완료');
       } catch (e) {
-        print('⚠️ 백엔드 API 호출 실패 (무시됨): $e');
       }
 
       return true;
     } catch (e) {
-      print('❌ 제스처 실행 오류: $e');
       return false;
     }
   }
@@ -649,11 +581,9 @@ class GestureService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
-        print('❌ 사용자 인증 정보 없음');
         return null;
       }
 
-      print('🔍 모드 진입 제스처 조회: $deviceId (사용자: $uid)');
 
       // 새로운 구조: gestureKey → {device: "deviceId"} 에서 해당 device를 찾기
       final snapshot = await _firestore
@@ -667,14 +597,11 @@ class GestureService {
       if (snapshot.docs.isNotEmpty) {
         final doc = snapshot.docs.first;
         final gestureKey = doc.id; // 문서 ID가 제스처 키
-        print('✅ 모드 진입 제스처 조회 완료: $deviceId → $gestureKey');
         return gestureKey;
       }
 
-      print('ℹ️ 모드 진입 제스처가 설정되지 않았습니다: $deviceId');
       return null;
     } catch (e) {
-      print('❌ 모드 진입 제스처 조회 오류: $e');
       return null;
     }
   }
@@ -682,11 +609,8 @@ class GestureService {
   // 🔧 사용자별 컬렉션 존재 확인 및 생성
   static Future<void> _ensureUserCollectionsExist(String uid) async {
     try {
-      print('🔧 사용자별 컬렉션 확인 및 생성 시작: $uid');
-      print('🔍 Firestore 인스턴스 확인: ${_firestore != null}');
 
       // mode_gesture 컬렉션 확인
-      print('🔍 mode_gesture 컬렉션 확인 중...');
       try {
         final modeGestureSnapshot = await _firestore
             .collection('users')
@@ -695,11 +619,8 @@ class GestureService {
             .limit(1)
             .get();
 
-        print('📊 mode_gesture 스냅샷 상태: ${modeGestureSnapshot.docs.isNotEmpty}');
-        print('📊 mode_gesture 스냅샷 개수: ${modeGestureSnapshot.docs.length}');
 
         if (modeGestureSnapshot.docs.isEmpty) {
-          print('📁 mode_gesture 컬렉션 생성 중...');
           try {
             await _firestore
                 .collection('users')
@@ -707,7 +628,6 @@ class GestureService {
                 .collection('mode_gesture')
                 .doc('_init')
                 .set({'created_at': FieldValue.serverTimestamp()});
-            print('✅ mode_gesture 컬렉션 생성 완료');
 
             // 생성 확인
             final verifySnapshot = await _firestore
@@ -716,26 +636,18 @@ class GestureService {
                 .collection('mode_gesture')
                 .limit(1)
                 .get();
-            print('✅ 생성 확인: ${verifySnapshot.docs.isNotEmpty}');
           } catch (e) {
-            print('❌ mode_gesture 컬렉션 생성 실패: $e');
-            print('❌ 오류 타입: ${e.runtimeType}');
             if (e is FirebaseException) {
-              print('❌ Firebase 오류 코드: ${e.code}');
-              print('❌ Firebase 오류 메시지: ${e.message}');
             }
             throw e;
           }
         } else {
-          print('✅ mode_gesture 컬렉션이 이미 존재합니다');
         }
       } catch (e) {
-        print('❌ mode_gesture 컬렉션 확인 실패: $e');
         throw e;
       }
 
       // control_gesture 컬렉션 확인
-      print('🔍 control_gesture 컬렉션 확인 중...');
       try {
         final controlGestureSnapshot = await _firestore
             .collection('users')
@@ -744,13 +656,7 @@ class GestureService {
             .limit(1)
             .get();
 
-        print(
-            '📊 control_gesture 스냅샷 상태: ${controlGestureSnapshot.docs.isNotEmpty}');
-        print(
-            '📊 control_gesture 스냅샷 개수: ${controlGestureSnapshot.docs.length}');
-
         if (controlGestureSnapshot.docs.isEmpty) {
-          print('📁 control_gesture 컬렉션 생성 중...');
           try {
             await _firestore
                 .collection('users')
@@ -758,31 +664,19 @@ class GestureService {
                 .collection('control_gesture')
                 .doc('_init')
                 .set({'created_at': FieldValue.serverTimestamp()});
-            print('✅ control_gesture 컬렉션 생성 완료');
           } catch (e) {
-            print('❌ control_gesture 컬렉션 생성 실패: $e');
-            print('❌ 오류 타입: ${e.runtimeType}');
             if (e is FirebaseException) {
-              print('❌ Firebase 오류 코드: ${e.code}');
-              print('❌ Firebase 오류 메시지: ${e.message}');
             }
             throw e;
           }
         } else {
-          print('✅ control_gesture 컬렉션이 이미 존재합니다');
         }
       } catch (e) {
-        print('❌ control_gesture 컬렉션 확인 실패: $e');
         throw e;
       }
 
-      print('✅ 모든 컬렉션 확인 및 생성 완료');
     } catch (e) {
-      print('❌ 사용자별 컬렉션 생성 오류: $e');
-      print('❌ 오류 타입: ${e.runtimeType}');
       if (e is FirebaseException) {
-        print('❌ Firebase 오류 코드: ${e.code}');
-        print('❌ Firebase 오류 메시지: ${e.message}');
       }
       throw e;
     }
@@ -804,12 +698,9 @@ class GestureService {
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
-        print('✅ 백엔드 API 응답 성공: ${response.body}');
       } else {
-        print('⚠️ 백엔드 API 응답 오류: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ 백엔드 API 호출 오류: $e');
       throw e;
     }
   }
@@ -831,11 +722,9 @@ class GestureService {
         final controls = data['controls'] as List<dynamic>? ?? [];
         return controls.map((control) => control.toString()).toList();
       } else {
-        print('⚠️ 백엔드 API 응답 오류: ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      print('❌ 백엔드 API 호출 오류: $e');
       return [];
     }
   }
@@ -844,7 +733,6 @@ class GestureService {
   static Future<Map<String, Map<String, dynamic>>>
       getAvailableGesturesFromAPI() async {
     try {
-      print('🌐 API에서 제스처 목록 가져오는 중...');
       final response = await http.get(
         Uri.parse('https://5daf32736a31.ngrok-free.app/gesture/list'),
         headers: {
@@ -870,14 +758,11 @@ class GestureService {
           }
         }
 
-        print('✅ API에서 제스처 목록 가져오기 완료: ${result.length}개');
         return result;
       } else {
-        print('⚠️ API 응답 오류: ${response.statusCode}');
         return getAvailableGestures(); // 기본 제스처 목록 반환
       }
     } catch (e) {
-      print('❌ API 호출 오류: $e');
       return getAvailableGestures(); // 기본 제스처 목록 반환
     }
   }
@@ -891,7 +776,6 @@ class GestureService {
 
       // 문서 ID: deviceId_control 형태로 생성 (예: light_power)
       final docId = '${deviceId}_$control';
-      print('📄 문서 ID 생성: $docId');
 
       // 저장할 데이터 준비 (이미지와 동일한 구조)
       final dataToSave = {
@@ -908,9 +792,7 @@ class GestureService {
           .doc(docId)
           .set(dataToSave);
 
-      print('✅ Firestore 백업 저장 완료');
     } catch (e) {
-      print('❌ Firestore 백업 저장 오류: $e');
     }
   }
 }

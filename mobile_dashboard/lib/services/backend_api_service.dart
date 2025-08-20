@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 class BackendApiService {
   // 🔗 백엔드 서버 URL (실제 서버 주소로 변경 필요)
   static const String _baseUrl =
-      'https://737411f04049.ngrok-free.app'; // ngrok 주소
+      'https://23ec43836f15.ngrok-free.app'; // ngrok 주소
   // static const String _baseUrl = 'http://your-server-ip:5000'; // 실제 서버
 
   // 🔗 API URL getter
@@ -26,8 +26,6 @@ class BackendApiService {
     required String gesture,
   }) async {
     try {
-      print('🎯 제스처 제어 API 호출: $gesture');
-
       final uri = Uri.parse('$_baseUrl/gesture');
       final body = json.encode({
         'uid': uid,
@@ -42,15 +40,11 @@ class BackendApiService {
           )
           .timeout(_timeout);
 
-      print('📡 제스처 API 응답: ${response.statusCode}');
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body) as Map<String, dynamic>;
-        print('✅ 제스처 제어 성공: ${data['message']}');
         return data;
       } else {
         final errorData = json.decode(response.body) as Map<String, dynamic>;
-        print('❌ 제스처 제어 실패: ${errorData['error']}');
         throw Exception(errorData['error'] ?? '알 수 없는 오류');
       }
     } catch (e) {

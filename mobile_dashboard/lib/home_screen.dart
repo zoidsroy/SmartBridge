@@ -36,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      print('추천 로딩 오류: $e');
       if (mounted) {
         setState(() {
           _isLoadingRecommendation = false;
@@ -49,8 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => _isLoadingBackendRecommendations = true);
 
     try {
-      print('🏠 Home: 백엔드 API 추천 데이터 로딩 시작...');
-
       // 백엔드 API 연결 상태 확인
       // 백엔드 연결 확인은 추천 데이터 로드에서 자동으로 처리
       final isConnected = true;
@@ -65,16 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
             _isLoadingBackendRecommendations = false;
             _isBackendApiConnected = true;
           });
-
-          print(
-              '🏠 Home: ✅ 백엔드 API 추천 데이터 로딩 완료 (${backendRecommendations['recommendations']?.length ?? 0}개)');
         } else {
           setState(() {
             _backendRecommendations = null;
             _isLoadingBackendRecommendations = false;
             _isBackendApiConnected = false;
           });
-          print('🏠 Home: ❌ 백엔드 API 응답 없음');
         }
       } else {
         setState(() {
@@ -82,10 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
           _isLoadingBackendRecommendations = false;
           _isBackendApiConnected = false;
         });
-        print('🏠 Home: ❌ 백엔드 API 서버 연결 실패');
       }
     } catch (e) {
-      print('🏠 Home: ❌ 백엔드 API 추천 데이터 로딩 실패: $e');
       setState(() {
         _backendRecommendations = null;
         _isLoadingBackendRecommendations = false;
@@ -666,9 +657,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             value['last_gesture']?.toString() ?? '';
                         final updatedAt = value['updatedAt']?.toString() ?? '';
 
-                        print(
-                            '📱 홈화면 사용자 정보: current_device=$currentDevice, last_gesture=$lastGesture, updatedAt=$updatedAt');
-
                         // 현재 기기가 설정되어 있는지 확인 (null 문자열 포함)
                         if (currentDevice.isEmpty || currentDevice == "null") {
                           return Column(
@@ -843,7 +831,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
+                  // AI 추천을 스크롤해야 보이도록 큰 공백 추가
+                  const SizedBox(height: 200),
 
                   // API 추천 섹션
                   _buildBackendRecommendationsSection(),
@@ -973,6 +962,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'thumbs_left': '👈 왼쪽 가리키기',
       'vertical_V': '🖖 수직 브이',
       'clockwise': '🔄 시계방향',
+      'counter_clockwise': '🔄 반시계방향',
       'ok': '👌 오케이',
       'gun': '🔫 총'
     };

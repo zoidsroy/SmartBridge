@@ -30,9 +30,6 @@ class _GestureCustomizationScreenState
   @override
   void initState() {
     super.initState();
-    print('🚀 GestureCustomizationScreen 초기화 시작');
-    print('📱 전달받은 keyName: ${widget.keyName}');
-    print('📱 전달받은 deviceName: ${widget.deviceName}');
     _loadData();
   }
 

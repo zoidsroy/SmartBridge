@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
@@ -10,7 +9,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iot_smarthome/push_notification.dart';
 import 'package:iot_smarthome/settings_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'device_detail_screen.dart';
@@ -32,7 +30,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   if (message.notification != null) {
-    print("Notification Received!");
+    // Notification received
   }
 }
 
@@ -91,7 +89,7 @@ void main() async {
   //foreground alarm receive listener
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
     String payloadData = jsonEncode(message.data);
-    print('Got a message in foreground');
+    // Got a message in foreground
     if (message.notification != null) {
       //flutter_local_notifications package
       PushNotification.showSimpleNotification(

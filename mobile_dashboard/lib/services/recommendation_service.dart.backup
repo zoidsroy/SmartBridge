@@ -16,13 +16,17 @@ class RecommendationService {
     try {
       final uid = _currentUserId;
       if (uid == null) {
+        print('❌ 사용자 인증 정보 없음');
         return null;
       }
+
+      print('🔗 백엔드 API 추천 요청 시작...');
 
       // 백엔드 API만 사용 (프론트에서 가공하지 않음)
       final response = await BackendApiService.getRecommendations(uid: uid);
       return response;
     } catch (e) {
+      print('❌ 백엔드 API 추천 실패: $e');
       return null;
     }
   }

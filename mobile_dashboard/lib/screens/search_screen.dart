@@ -53,14 +53,6 @@ class _SearchScreenState extends State<SearchScreen> {
       actionData: {'function': 'gesture_customization'},
     ),
     SearchResult(
-      title: '사용 통계',
-      subtitle: '기기 사용량 분석 및 추천',
-      category: '기능',
-      icon: Icons.analytics,
-      action: SearchAction.navigateToFunction,
-      actionData: {'function': 'usage_analytics'},
-    ),
-    SearchResult(
       title: '개인화 추천',
       subtitle: '사용 패턴 분석 및 맞춤형 추천',
       category: '기능',
@@ -307,9 +299,6 @@ class _SearchScreenState extends State<SearchScreen> {
             break;
           case 'gesture_customization':
             _showDeviceSelectionDialog();
-            break;
-          case 'usage_analytics':
-            Navigator.pushNamed(context, '/usage_analytics');
             break;
           case 'recommendation':
             Navigator.pushNamed(context, '/recommendation');

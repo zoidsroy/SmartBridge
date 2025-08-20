@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 class ApiService {
   // 🔗 Flask 서버 URL (나중에 실제 서버 주소로 변경)
   static const String _baseUrl =
-      'https://737411f04049.ngrok-free.app'; // ngrok 주소
+      'https://23ec43836f15.ngrok-free.app'; // ngrok 주소
   //static const String _baseUrl = 'http://192.168.253.204:5000'; // 실제 서버 IP
 
   // ⏱️ 타임아웃 설정 (웹에서 빠른 실패를 위해 짧게 설정)
@@ -13,12 +13,8 @@ class ApiService {
   // 🤖 파이썬 추천 API 호출
   static Future<Map<String, dynamic>?> getRecommendations() async {
     try {
-      print('🚀 파이썬 추천 API 호출 시도...');
-      print('🔗 서버 URL: $_baseUrl/recommend_gesture_auto');
-
       final uri = Uri.parse('$_baseUrl/recommend_gesture_auto');
 
-      print('📡 HTTP GET 요청 시작...');
       final response = await http.get(
         uri,
         headers: {
@@ -27,22 +23,13 @@ class ApiService {
         },
       ).timeout(_timeout);
 
-      print('📡 API 응답 상태: ${response.statusCode}');
-      print('📡 응답 본문 길이: ${response.body.length}');
-
       if (response.statusCode == 200) {
-        print(
-            '📡 응답 내용: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}...');
         final data = json.decode(response.body) as Map<String, dynamic>;
-        print('✅ 추천 데이터 수신 성공: ${data.keys}');
         return data;
       } else {
-        print('❌ API 오류: ${response.statusCode} - ${response.body}');
         return null;
       }
     } catch (e) {
-      print('💥 네트워크 오류 상세: $e');
-      print('💥 오류 타입: ${e.runtimeType}');
       return null;
     }
   }
